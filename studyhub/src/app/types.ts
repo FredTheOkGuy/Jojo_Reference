@@ -7,9 +7,9 @@ export interface Member {
   c: string;
 }
 
-export interface Document {
+export interface DocumentType {
   n: string;
-  t: 'pdf' | 'docx' | 'pptx';
+  t: "pdf" | "docx" | "pptx";
   s: string;
 }
 
@@ -38,7 +38,7 @@ export interface StudyGroup {
   badgeBg: string;
   badgeColor: string;
   members: Member[];
-  docs: Document[];
+  docs: DocumentType[];
   messages: Message[];
   filterCode?: string;
   filterNum?: string;
