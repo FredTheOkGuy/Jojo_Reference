@@ -1,4 +1,4 @@
-import { StudyGroup } from '../../app/types';
+import type { StudyGroup } from '../../app/StudyHubApp';
 
 const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
   'gi-orange': { bg: '#faeade', text: '#c96332' },
@@ -10,29 +10,42 @@ const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
 
 interface ChatsScreenProps {
   groups: StudyGroup[];
+  onDetail: (id: number) => void;
+  onChat: (id: number) => void;
   onBack: () => void;
-  onOpenChat: (id: number) => void;
+  onProfile: () => void;
 }
 
-export default function ChatsScreen({ groups, onBack, onOpenChat }: ChatsScreenProps) {
+export default function ChatsScreen({ groups, onDetail, onChat, onBack, onProfile }: ChatsScreenProps) {
   const myGroups = groups.filter((g) => g.joined);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f2ede3]">
       {/* Topbar */}
       <div className="h-16 bg-[#faf8f4] border-b border-[#ddd8cc] flex items-center px-5 sticky top-0 z-50">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1.5 text-sm text-[#4a4438] cursor-pointer bg-none border-none font-['Plus Jakarta Sans'] font-bold p-1.5 rounded-lg transition-all hover:text-[#c96332] hover:bg-[#faeade]"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-            <path d="M19 12H5M12 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <div className="flex-1 text-center">
-          <div className="font-bold text-lg text-[#1a1610] font-['Syne']">Messages</div>
+        <div className="w-24">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-1.5 text-sm text-[#4a4438] cursor-pointer bg-none border-none font-['Plus Jakarta Sans'] font-bold p-1.5 rounded-lg transition-all hover:text-[#c96332] hover:bg-[#faeade]"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+          </button>
         </div>
-        <div className="w-16"></div>
+        <div className="flex-1 text-center">
+          <span className="font-black text-2xl text-[#c96332] font-['Syne']">
+            Chats
+          </span>
+        </div>
+        <div className="w-24 flex justify-end">
+          <button
+            onClick={onProfile}
+            className="w-9 h-9 rounded-full bg-[#c96332] text-white font-bold text-sm flex items-center justify-center transition-all hover:shadow-lg cursor-pointer border-2 border-[#f0b897]"
+          >
+            AJ
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -50,7 +63,7 @@ export default function ChatsScreen({ groups, onBack, onOpenChat }: ChatsScreenP
               <div
                 key={group.id}
                 className="bg-[#faf8f4] border border-[#ddd8cc] rounded-[14px] p-4 mb-2.5 flex items-center gap-3.5 cursor-pointer transition-all shadow-sm hover:border-[#f0b897] hover:shadow-md hover:-translate-y-0.5"
-                onClick={() => onOpenChat(group.id)}
+                onClick={() => onChat(group.id)}
               >
                 <div
                   className="w-12 h-12 rounded-[12px] flex items-center justify-center font-black text-base font-['Syne'] flex-shrink-0 -tracking-0.5px"

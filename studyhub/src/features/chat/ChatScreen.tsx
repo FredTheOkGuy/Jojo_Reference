@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { StudyGroup } from '../../app/types';
+import type { StudyGroup } from '../../app/StudyHubApp';
 
 const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
   'gi-orange': { bg: '#faeade', text: '#c96332' },

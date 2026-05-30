@@ -1,28 +1,7 @@
 import { useState } from "react";
 import GroupCard from "../../components/GroupCard";
 import CreateGroupModal from "../../components/CreateGroupModal";
-
-export interface StudyGroup {
-  id: number;
-  name: string;
-  course: string;
-  icon: string;
-  gi: string;
-  cur: number;
-  max: number;
-  joined: boolean;
-  location: string;
-  days: string;
-  time: string;
-  desc: string;
-  badgeBg: string;
-  badgeColor: string;
-  members: any[];
-  docs: any[];
-  messages: any[];
-  filterCode?: string;
-  filterNum?: string;
-}
+import type { StudyGroup } from "../../app/StudyHubApp";
 
 interface MainScreenProps {
   groups: StudyGroup[];

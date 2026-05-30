@@ -1,8 +1,13 @@
+import type { StudyGroup } from '../../app/StudyHubApp';
+
 interface ProfileScreenProps {
+  groups: StudyGroup[];
   onBack: () => void;
 }
 
-export default function ProfileScreen({ onBack }: ProfileScreenProps) {
+export default function ProfileScreen({ groups, onBack }: ProfileScreenProps) {
+  const joinedCount = groups.filter(g => g.joined).length;
+  
   return (
     <div className="flex flex-col min-h-screen bg-[#f2ede3]">
       {/* Sub Topbar */}
@@ -34,6 +39,10 @@ export default function ProfileScreen({ onBack }: ProfileScreenProps) {
           <div className="px-5 py-4 border-b border-[#ddd8cc]">
             <div className="text-xs font-bold uppercase tracking-wider text-[#9a9282] mb-1">Email</div>
             <div className="text-base font-semibold text-[#1a1610]">alex.johnson@concordia.ca</div>
+          </div>
+          <div className="px-5 py-4 border-b border-[#ddd8cc]">
+            <div className="text-xs font-bold uppercase tracking-wider text-[#9a9282] mb-1">Groups Joined</div>
+            <div className="text-base font-semibold text-[#1a1610]">{joinedCount}</div>
           </div>
           <div className="px-5 py-4">
             <div className="text-xs font-bold uppercase tracking-wider text-[#9a9282] mb-1">School</div>
