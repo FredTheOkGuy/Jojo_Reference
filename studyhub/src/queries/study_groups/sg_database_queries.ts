@@ -4,7 +4,7 @@
 */
 
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { db } from "../../services/firebase/firebase";
+import { db } from "@/services/firebase/firebase";
 
 export async function createStudyGroup(groupName: string,
                           courseCode: string,

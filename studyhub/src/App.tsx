@@ -54,7 +54,6 @@ function App() {
         </button>
 
       </section>
-      {/* ... rest of your code unchanged ... */}
     </>
   )
 }
