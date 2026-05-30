@@ -1,37 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
-<<<<<<< HEAD
-=======
 
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
->>>>>>> 8b53bd5d09052429efb76c48d7b6d392e441a7ef
-
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+:root {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  color: #1a1610;
+  background: #f2ede3;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
 body {
-  height: 100%;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  min-width: 320px;
   background: #f2ede3;
   color: #1a1610;
-  overflow-x: hidden;
-  margin: 0;
-  padding: 0;
 }
 
-#root {
-  height: 100%;
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
+button {
+  border: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

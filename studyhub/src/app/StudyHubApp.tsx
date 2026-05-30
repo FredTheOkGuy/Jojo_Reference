@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { INITIAL_GROUPS } from "../data/mockData";
+import { CURRENT_USER, INITIAL_GROUPS } from "../data/mockData";
 import LoginScreen from "../pages/auth/LoginScreen";
 import MainScreen from "../pages/study_groups/MainScreen";
 import ChatsScreen from "../features/chat/ChatsScreen";
@@ -7,56 +7,8 @@ import DetailScreen from "../pages/study_groups/DetailScreen";
 import ChatScreen from "../features/chat/ChatScreen";
 import ProfileScreen from "../features/profile/ProfileScreen";
 
-// ============================================
-// TYPE DEFINITIONS
-// These define the structure of your data
-// Replace the mockData file with real API/database calls
-// ============================================
-
-export interface Member {
-  i: string; // Initials
-  n: string; // Full name
-  r: string; // Role (Host, Member, etc.)
-  owner: boolean; // Is owner
-  c: string; // Color code
-}
-
-export interface DocumentType {
-  n: string; // File name
-  t: "pdf" | "docx" | "pptx"; // File type
-  s: string; // File size
-}
-
-export interface Message {
-  sender: string; // Short name for avatar
-  senderFull: string; // Full name
-  mine: boolean; // Is current user's message
-  c: string; // Color
-  text: string; // Message content
-  time: string; // Timestamp
-}
-
-export interface StudyGroup {
-  id: number;
-  name: string;
-  course: string;
-  icon: string;
-  gi: string; // Group icon color theme
-  cur: number; // Current members
-  max: number; // Max capacity
-  joined: boolean;
-  location: string;
-  days: string;
-  time: string;
-  desc: string;
-  badgeBg: string;
-  badgeColor: string;
-  members: Member[];
-  docs: DocumentType[];
-  messages: Message[];
-  filterCode?: string;
-  filterNum?: string;
-}
+import type { CreateGroupPayload, StudyGroup } from "./types";
+export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup } from "./types";
 
 type Screen = "login" | "main" | "chats" | "detail" | "chat" | "profile";
 
@@ -70,19 +22,54 @@ export default function StudyHubApp() {
   const [chatFrom, setChatFrom] = useState<"detail" | "chats">("detail");
 
   const handleJoin = (id: number) => {
-    setGroups(groups.map((g) => (g.id === id ? { ...g, joined: true } : g)));
+    setGroups((currentGroups) =>
+      currentGroups.map((g) => {
+        if (g.id !== id || g.joined || g.cur >= g.max) return g;
+        return {
+          ...g,
+          joined: true,
+          cur: g.cur + 1,
+          members: [
+            { i: CURRENT_USER.initials, n: CURRENT_USER.name, r: CURRENT_USER.school, owner: false, c: "#c96332" },
+            ...g.members,
+          ],
+          messages: [
+            ...g.messages,
+            {
+              sender: CURRENT_USER.initials,
+              senderFull: "You",
+              mine: true,
+              c: "#c96332",
+              text: "Hey everyone! Just joined the group 👋",
+              time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            },
+          ],
+        };
+      }),
+    );
   };
 
   const handleLeave = (id: number) => {
-    setGroups(groups.map((g) => (g.id === id ? { ...g, joined: false } : g)));
+    setGroups((currentGroups) =>
+      currentGroups.map((g) =>
+        g.id === id
+          ? {
+              ...g,
+              joined: false,
+              cur: Math.max(0, g.cur - 1),
+              members: g.members.filter((m) => m.i !== CURRENT_USER.initials),
+            }
+          : g,
+      ),
+    );
   };
 
-  const handleCreateGroup = (data: any) => {
+  const handleCreateGroup = (data: CreateGroupPayload) => {
     const newGroup: StudyGroup = {
       id: groups.length,
       name: data.name || "New Study Group",
-      course: `${data.code}-${data.number}`,
-      icon: (data.code || "NEW").substring(0, 2).toUpperCase(),
+      course: `${data.code || "MISC"} ${data.number || "000"}`,
+      icon: (data.name || data.code || "NEW").split(" ").map((part) => part[0]).join("").substring(0, 2).toUpperCase(),
       gi: ["gi-orange", "gi-green", "gi-blue", "gi-purple", "gi-gold"][
         groups.length % 5
       ],
@@ -91,30 +78,39 @@ export default function StudyHubApp() {
       joined: true,
       location: data.location || "TBD",
       days: data.day || "Monday",
-      time: data.time || "17:00",
-      desc: "New study group",
-      badgeBg: "#faf8f4",
+      time: data.time ? `${data.time} – onwards` : "17:00 – onwards",
+      desc: `A new study group for ${data.code || "MISC"} ${data.number || "000"}.`,
+      badgeBg: "#faeade",
       badgeColor: "#c96332",
-      members: [],
+      members: [{ i: CURRENT_USER.initials, n: CURRENT_USER.name, r: CURRENT_USER.school, owner: true, c: "#c96332" }],
       docs: [],
-      messages: [],
-      filterCode: data.code,
-      filterNum: data.number,
+      messages: [
+        {
+          sender: CURRENT_USER.initials,
+          senderFull: "You",
+          mine: true,
+          c: "#c96332",
+          text: "I created this group — welcome everyone! 🎉",
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        },
+      ],
+      filterCode: data.code || "MISC",
+      filterNum: data.number || "000",
     };
     setGroups([...groups, newGroup]);
   };
 
   const handleSendMessage = (text: string) => {
     if (activeGroupId !== null) {
-      setGroups(
-        groups.map((g) =>
+      setGroups((currentGroups) =>
+        currentGroups.map((g) =>
           g.id === activeGroupId
             ? {
                 ...g,
                 messages: [
                   ...g.messages,
                   {
-                    sender: "You",
+                    sender: CURRENT_USER.initials,
                     senderFull: "You",
                     mine: true,
                     c: "#c96332",
@@ -177,27 +173,29 @@ export default function StudyHubApp() {
     );
   }
 
-  if (screen === "detail" && activeGroupId !== null) {
+  const activeGroup = activeGroupId === null ? undefined : groups.find((g) => g.id === activeGroupId);
+
+  if (screen === "detail" && activeGroup) {
     return (
       <DetailScreen
-        group={groups[activeGroupId]}
+        group={activeGroup}
         onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
         onChat={() => {
           setChatFrom("detail");
           setScreen("chat");
         }}
         onLeave={() => {
-          handleLeave(activeGroupId);
+          handleLeave(activeGroup.id);
           setScreen(detailFrom === "chats" ? "chats" : "main");
         }}
       />
     );
   }
 
-  if (screen === "chat" && activeGroupId !== null) {
+  if (screen === "chat" && activeGroup) {
     return (
       <ChatScreen
-        group={groups[activeGroupId]}
+        group={activeGroup}
         onBack={() => setScreen(chatFrom === "chats" ? "chats" : "detail")}
         onSendMessage={handleSendMessage}
       />

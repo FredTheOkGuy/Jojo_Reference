@@ -1,13 +1,15 @@
 // This file contains all hardcoded data
 // Replace this with API/database calls later
 
-import type { StudyGroup } from "../app/StudyHubApp";
+import type { StudyGroup } from "../app/types";
 
 export const INITIAL_GROUPS: StudyGroup[] = [
   {
     id: 0,
     name: "Algorithm Masters",
     course: "COMP 352",
+    filterCode: "COMP",
+    filterNum: "352",
     icon: "AL",
     gi: "gi-orange",
     cur: 7,
@@ -50,6 +52,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     id: 1,
     name: "Calculus Crew",
     course: "MATH 203",
+    filterCode: "MATH",
+    filterNum: "203",
     icon: "CA",
     gi: "gi-green",
     cur: 5,
@@ -69,6 +73,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     id: 2,
     name: "Digital Systems Study",
     course: "COEN 244",
+    filterCode: "COEN",
+    filterNum: "244",
     icon: "DS",
     gi: "gi-purple",
     cur: 6,

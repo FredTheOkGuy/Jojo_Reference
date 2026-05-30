@@ -1,5 +1,5 @@
-import React from "react";
-import type { Message } from "../../app/StudyHubApp";
+import type { RefObject } from "react";
+import type { Message } from "../../app/types";
 
 interface MessageItemProps {
   message: Message;
@@ -43,7 +43,7 @@ export function MessageItem({ message }: MessageItemProps) {
 
 interface MessageListProps {
   messages: Message[];
-  scrollRef?: React.RefObject<HTMLDivElement>;
+  scrollRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function MessageList({ messages, scrollRef }: MessageListProps) {
