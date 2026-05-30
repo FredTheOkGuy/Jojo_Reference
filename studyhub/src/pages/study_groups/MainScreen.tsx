@@ -3,8 +3,13 @@ import type { CreateGroupPayload, StudyGroup } from "../../app/types";
 import GroupCard from "../../components/GroupCard";
 import CreateGroupModal from "../../components/CreateGroupModal";
 import FilterBar from "../../components/ui/FilterBar";
-import TopBar, { AvatarButton, ChatIcon, IconButton } from "../../components/ui/TopBar";
+import TopBar, {
+  AvatarButton,
+  ChatIcon,
+  IconButton,
+} from "../../components/ui/TopBar";
 import { EmptyState, SectionHeader } from "../../components/ui/Card";
+import PageNavigator from "../../components/ui/PageNavigator";
 
 interface MainScreenProps {
   groups: StudyGroup[];
@@ -41,20 +46,37 @@ export default function MainScreen({
     return codeMatch && numMatch;
   });
 
-  const courseCodes = [...new Set(openGroups.map((g) => g.filterCode).filter(Boolean))] as string[];
-  const courseNumbers = [...new Set(openGroups.map((g) => g.filterNum).filter(Boolean))] as string[];
+  const courseCodes = [
+    ...new Set(openGroups.map((g) => g.filterCode).filter(Boolean)),
+  ] as string[];
+  const courseNumbers = [
+    ...new Set(openGroups.map((g) => g.filterNum).filter(Boolean)),
+  ] as string[];
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f2ede3]">
       <TopBar
-        left={<IconButton onClick={onChats} title="Chats"><ChatIcon /></IconButton>}
+        left={
+          <IconButton onClick={onChats} title="Chats">
+            <ChatIcon />
+          </IconButton>
+        }
         right={<AvatarButton onClick={onProfile} />}
       />
+
+      <PageNavigator items={["StudyHub", "Main"]} />
 
       <main className="flex-1 px-5 py-6 max-w-2xl mx-auto w-full">
         <SectionHeader title="Your Study Groups" actionLabel="See all" />
         {myGroups.length > 0 ? (
-          myGroups.map((group) => <GroupCard key={group.id} group={group} joined onDetail={onDetail} />)
+          myGroups.map((group) => (
+            <GroupCard
+              key={group.id}
+              group={group}
+              joined
+              onDetail={onDetail}
+            />
+          ))
         ) : (
           <EmptyState>You haven't joined any groups yet.</EmptyState>
         )}
@@ -74,7 +96,12 @@ export default function MainScreen({
 
         {filteredOpenGroups.length > 0 ? (
           filteredOpenGroups.map((group) => (
-            <GroupCard key={group.id} group={group} joined={false} onJoin={() => onJoin(group.id)} />
+            <GroupCard
+              key={group.id}
+              group={group}
+              joined={false}
+              onJoin={() => onJoin(group.id)}
+            />
           ))
         ) : (
           <EmptyState>No open groups at the moment.</EmptyState>
