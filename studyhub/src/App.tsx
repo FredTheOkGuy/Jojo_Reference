@@ -4,6 +4,8 @@ import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
 
+import { signInWithGoogle } from '@/services/firebase/auth'
+
 function App() {
   const [count, setCount] = useState(0)
 
