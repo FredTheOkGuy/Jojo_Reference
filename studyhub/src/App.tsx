@@ -3,7 +3,7 @@ import './App.css'
 import heroImg from './assets/hero.png'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
-import { createStudyGroup } from './features/study_groups/sg_database_queries'; // add this
+import { createStudyGroup } from './queries/study_groups/sg_database_queries'; // add this
 
 function App() {
   const [count, setCount] = useState(0)
