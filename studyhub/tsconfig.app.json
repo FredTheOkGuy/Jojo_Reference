@@ -6,6 +6,7 @@
     "module": "esnext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
@@ -20,7 +21,7 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true

@@ -1,62 +1,52 @@
-import { useState } from 'react'
+import { Suspense, lazy, Component, useState } from "react";
+import type { ReactNode } from "react";
 import './App.css'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import { createStudyGroup } from './features/study_groups/sg_database_queries'; // add this
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  // add this
-  const handleCreate = async () => {
-    try {
-      await createStudyGroup(
-        "Algorithm Masters",
-        "COMP",
-        "352",
-        "Alex Johnson",
-        "Hall Building H-521",
-        new Date("2025-06-10T17:00:00"),
-        10
-      );
-      console.log("success");
-    } catch (err) {
-      console.error("Failed:", err);
-    }
-  };
+const StudyHubApp = lazy(() => import("./app/StudyHubApp"));
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+class ErrorBoundary extends Component<
+  { children: ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen bg-red-500 text-white p-8">
+          <h1 className="text-3xl font-bold mb-4">Error in App</h1>
+          <p className="text-xl whitespace-pre-wrap">
+            {this.state.error?.toString()}
           </p>
+          <p className="text-lg mt-4">{this.state.error?.message}</p>
         </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
+      );
+    }
 
-        {/* add this */}
-        <button type="button" onClick={handleCreate}>
-          Create Test Group
-        </button>
-
-      </section>
-      {/* ... rest of your code unchanged ... */}
-    </>
-  )
+    return this.props.children;
+  }
 }
 
-export default App
+export default function App() {
+  return (
+    <ErrorBoundary>
+      <Suspense
+        fallback={
+          <div className="flex items-center justify-center h-screen">
+            Loading...
+          </div>
+        }
+      >
+        <StudyHubApp />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
