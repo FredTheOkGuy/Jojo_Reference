@@ -25,5 +25,11 @@ export async function createStudyGroup(groupName: string,
         members: [creatorName],
         createdAt: serverTimestamp(),
     });
+
+    await addDoc(collection(db, "study_groups", docRef.id, "chat_messages"), {
+        sender: "System",
+        message: `${creatorName} Created the group.`,
+        timestamp: serverTimestamp(),
+    });
     console.log("Document written with ID: ", docRef.id);
 }
