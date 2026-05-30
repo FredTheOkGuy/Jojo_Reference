@@ -1,5 +1,7 @@
-import { Suspense, lazy, Component } from "react";
+import { Suspense, lazy, Component, useState } from "react";
 import type { ReactNode } from "react";
+import './App.css'
+
 
 const StudyHubApp = lazy(() => import("./app/StudyHubApp"));
 
