@@ -70,12 +70,7 @@ export default function MainScreen({
       !schoolQuery ||
       normalize(getSchoolSearchText(group)).includes(schoolQuery);
 
-  const courseCodes = [
-    ...new Set(groups.map((g) => g.filterCode).filter(Boolean)),
-  ] as string[];
-  const courseNumbers = [
-    ...new Set(groups.map((g) => g.filterNum).filter(Boolean)),
-  ] as string[];
+  // course codes/numbers previously collected here but unused — removed to satisfy lint
     const numberMatch =
       !numberQuery ||
       normalize(group.filterNum || group.course).includes(numberQuery);
@@ -89,10 +84,20 @@ export default function MainScreen({
     return schoolMatch && numberMatch && courseNameMatch;
   });
 
-  const filteredPrivateGroups = privateGroups.filter((g) => {
-    const codeMatch = !filterCode || g.filterCode === filterCode;
-    const numMatch = !filterNum || g.filterNum === filterNum;
-    return codeMatch && numMatch;
+  const filteredPrivateGroups = privateGroups.filter((group) => {
+    const schoolQuery = normalize(filterSchool);
+    const numberQuery = normalize(filterNum);
+    const courseNameQuery = normalize(filterCourseName);
+
+    const schoolMatch =
+      !schoolQuery || normalize(getSchoolSearchText(group)).includes(schoolQuery);
+    const numberMatch =
+      !numberQuery || normalize(group.filterNum || group.course).includes(numberQuery);
+    const courseNameMatch =
+      !courseNameQuery ||
+      normalize(`${group.name} ${group.course} ${group.desc}`).includes(courseNameQuery);
+
+    return schoolMatch && numberMatch && courseNameMatch;
   });
 
   return (

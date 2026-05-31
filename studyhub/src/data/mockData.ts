@@ -120,8 +120,6 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     id: 2,
     name: "Computer Architecture Circle",
     course: "COEN 311",
-    name: "Digital Systems Study",
-    course: "COEN 244",
     schoolName: "Concordia University",
     filterCode: "COEN",
     filterNum: "311",
@@ -133,23 +131,13 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     isPrivate: true,
     joinRequested: false,
 
-    // FYI/custom room field
-    location: "EV 2.160",
-
-    // Real map-searchable location
-    mapLocation:
-      "Concordia University EV Building, 1515 St Catherine St W, Montreal, QC",
-
-    days: "Thursday",
-    time: "7:00 PM – 8:30 PM",
-    desc: "Private review group for pipelines, memory hierarchy, and ISA basics.",
     location: "EV 1.210",
     mapLocation:
       "Concordia University EV Building, 1515 St Catherine St W, Montreal, QC",
 
     days: "Friday",
     time: "6:00 PM – 8:00 PM",
-    desc: "Digital circuits, logic gates, Boolean algebra, and Verilog simulations.",
+    desc: "Private review group for pipelines, memory hierarchy, and ISA basics.",
     badgeBg: "#ede0f7",
     badgeColor: "#7a4fa0",
     members: [
@@ -184,6 +172,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 4,
     max: 7,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     location: "SP-S110",
     mapLocation:
@@ -226,6 +216,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 8,
     max: 12,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     location: "MB 3.255",
     mapLocation:
@@ -268,6 +260,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 3,
     max: 6,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     location: "H-837",
     mapLocation:
@@ -310,6 +304,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 6,
     max: 9,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     location: "EV 5.615",
     mapLocation:
@@ -352,6 +348,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 9,
     max: 14,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     location: "LB-205",
     mapLocation:
@@ -394,6 +392,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 4,
     max: 8,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     location: "Burnside 1B24",
     mapLocation: "Burnside Hall, 805 Sherbrooke St W, Montreal, QC",
@@ -435,6 +435,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 5,
     max: 10,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     location: "B-2245",
     mapLocation:

@@ -227,10 +227,17 @@ export default function StudyHubApp() {
         {requestModal}
         <MainScreen
           groups={groups}
-          filterCode={filterCode}
+          filterSchool={filterSchool}
           filterNum={filterNum}
-          onFilterCodeChange={setFilterCode}
+          filterCourseName={filterCourseName}
+          onFilterSchoolChange={setFilterSchool}
           onFilterNumChange={setFilterNum}
+          onFilterCourseNameChange={setFilterCourseName}
+          onClearFilters={() => {
+            setFilterSchool("");
+            setFilterNum("");
+            setFilterCourseName("");
+          }}
           onDetail={(id) => {
             setActiveGroupId(id);
             setDetailFrom("main");
@@ -243,29 +250,6 @@ export default function StudyHubApp() {
           onCreate={handleCreateGroup}
         />
       </>
-      <MainScreen
-        groups={groups}
-        filterSchool={filterSchool}
-        filterNum={filterNum}
-        filterCourseName={filterCourseName}
-        onFilterSchoolChange={setFilterSchool}
-        onFilterNumChange={setFilterNum}
-        onFilterCourseNameChange={setFilterCourseName}
-        onClearFilters={() => {
-          setFilterSchool("");
-          setFilterNum("");
-          setFilterCourseName("");
-        }}
-        onDetail={(id) => {
-          setActiveGroupId(id);
-          setDetailFrom("main");
-          setScreen("detail");
-        }}
-        onChats={() => setScreen("chats")}
-        onProfile={() => setScreen("profile")}
-        onJoin={handleJoin}
-        onCreate={handleCreateGroup}
-      />
     );
   }
 

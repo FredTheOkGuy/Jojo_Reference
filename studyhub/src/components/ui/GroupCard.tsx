@@ -18,7 +18,7 @@ export default function GroupCard({ group, joined, onDetail, onJoin, onAskToJoin
   return (
     <div
       className="bg-[#faf8f4] border border-[#ddd8cc] rounded-[14px] p-5 mb-3 flex items-center gap-4 transition-all shadow-sm hover:border-[#f0b897] hover:shadow-md hover:-translate-y-0.5"
-      onClick={() => (joined || group.isPrivate) && onDetail?.(group.id)}
+      onClick={() => { if (joined || group.isPrivate) onDetail?.(group.id); }}
       style={{ cursor: joined || group.isPrivate ? "pointer" : "default" }}
     >
       <div
@@ -52,7 +52,14 @@ export default function GroupCard({ group, joined, onDetail, onJoin, onAskToJoin
         ) : (
           <button
             type="button"
-            onClick={(e) => { e.stopPropagation(); group.isPrivate ? onAskToJoin?.() : onJoin?.(); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (group.isPrivate) {
+                onAskToJoin?.();
+              } else {
+                onJoin?.();
+              }
+            }}
             className="px-4 py-1.5 text-xs font-bold rounded-lg bg-[#faeade] text-[#c96332] transition-all hover:bg-[#c96332] hover:text-white cursor-pointer"
           >
             {group.isPrivate ? "Ask to Join" : "Join"}
