@@ -6,7 +6,10 @@
 // -------------------------------- Imports --------------------------------
 import { app, db } from "@/services/firebase/firebase";
 import { GoogleGenAI } from "@google/genai";
-import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import {
+  addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc,
+  onSnapshot, orderBy, query, serverTimestamp, updateDoc
+} from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
@@ -23,7 +26,8 @@ export async function createStudyGroup(groupName: string,
                           studyDate: Date,
                           studyTimeStart: Date,
                           studyTimeEnd: Date,
-                          maxStudents: number
+                          maxStudents: number,
+                          isPrivate: boolean
 
 ){
     const docRef = await addDoc(collection(db, "study_groups"), {
@@ -37,6 +41,7 @@ export async function createStudyGroup(groupName: string,
         studyTimeStart: studyTimeStart,
         studyTimeEnd: studyTimeEnd,
         maxStudents: maxStudents,
+        isPrivate: isPrivate,
         members: [creatorName],
         createdAt: serverTimestamp(),
     });
@@ -56,10 +61,15 @@ export async function joinStudyGroup(groupId: string, studentName: string) {
   });
 }
 
-export async function leaveStudyGroup(groupId: string, studentName: string) {
-  await updateDoc(doc(db, "study_groups", groupId), {
-    members: arrayRemove(studentName),
-  });
+export async function leaveStudyGroup(groupId: string, studentName: string, userId: string) {
+  await Promise.all([
+    updateDoc(doc(db, "study_groups", groupId), {
+      members: arrayRemove(studentName),
+    }),
+    updateDoc(doc(db, "users", userId), {
+      groupIds: arrayRemove(groupId),
+    }),
+  ]);
 }
 
 export async function deleteStudyGroup(groupId: string) {
@@ -189,5 +199,24 @@ export async function sendMessage(
         timestamp: serverTimestamp(),
     });
     console.log("Message sent: ", message);
+}
+
+export function listenToMessages(
+  groupId: string,
+  callback: (messages: any[]) => void
+) {
+  const q = query(
+    collection(db, "study_groups", groupId, "chat_messages"),
+    orderBy("timestamp", "asc")
+  );
+
+  return onSnapshot(q, (snapshot) => {
+    const messages = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    callback(messages);
+  });
 }
 
