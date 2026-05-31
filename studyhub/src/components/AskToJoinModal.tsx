@@ -21,6 +21,9 @@ export default function AskToJoinModal({
       onClick={onClose}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ask-to-join-title"
         className="w-[22rem] max-w-[94vw] rounded-[24px] border border-[#ddd8cc] bg-[#faf8f4] p-6 shadow-xl"
         onClick={(event) => event.stopPropagation()}
       >
@@ -29,7 +32,7 @@ export default function AskToJoinModal({
             <span aria-hidden="true">🔒</span>
             Private Group
           </div>
-          <h2 className="font-black text-2xl text-[#1a1610] font-['Syne'] leading-tight">
+          <h2 id="ask-to-join-title" className="font-black text-2xl text-[#1a1610] font-['Syne'] leading-tight">
             Ask to join {group.name}?
           </h2>
           <p className="mt-2 text-sm font-medium text-[#6f6758] leading-relaxed">
