@@ -24,6 +24,66 @@ function colorForId(id: string) {
   return GI_COLORS[hash % GI_COLORS.length];
 }
 
+function mapsQuery(address?: string, room?: string) {
+  const cleanAddress = String(address ?? "").trim();
+  const cleanRoom = String(room ?? "").trim();
+
+  if (cleanAddress && cleanRoom) return `${cleanAddress} ${cleanRoom}`;
+  return cleanAddress || cleanRoom;
+}
+
+function MapLocationCard({ address, room }: { address?: string; room?: string }) {
+  const queryText = mapsQuery(address, room);
+  const hasLocation = queryText.length > 0 && queryText.toLowerCase() !== "tbd";
+  const embedUrl = hasLocation
+    ? `https://www.google.com/maps?q=${encodeURIComponent(queryText)}&output=embed`
+    : "";
+  const openUrl = hasLocation
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(queryText)}`
+    : "";
+
+  return (
+    <Card className="rounded-[18px] overflow-hidden mb-4">
+      <div className="p-5 pb-4">
+        <div className="text-xs font-bold uppercase tracking-[0.08em] text-[#9a9282] mb-3">
+          🗺️ Map Location
+        </div>
+        <div className="font-bold text-lg text-[#1a1610] leading-snug">
+          {address || "Location TBD"}
+        </div>
+        {room && room !== "TBD" && (
+          <div className="text-sm text-[#9a9282] font-semibold mt-2">Room: {room}</div>
+        )}
+      </div>
+
+      {hasLocation ? (
+        <div className="relative h-[280px] bg-[#edeae2] border-t border-[#ddd8cc]">
+          <a
+            href={openUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-white text-[#1a73e8] text-sm font-bold shadow-sm border border-[#ddd8cc] hover:bg-[#f8fbff] transition-colors"
+          >
+            Open in Maps ↗
+          </a>
+          <iframe
+            title="Study group map location"
+            src={embedUrl}
+            className="w-full h-full border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+        </div>
+      ) : (
+        <div className="px-5 pb-5 text-sm text-[#9a9282] font-medium">
+          Add an address to this group to show the embedded map.
+        </div>
+      )}
+    </Card>
+  );
+}
+
 export default function DetailScreen() {
   const { id: groupId } = useParams<{ id: string }>();
   const { user } = useAuth();
@@ -34,7 +94,8 @@ export default function DetailScreen() {
   const [docs, setDocs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const joined = members.includes(user?.displayName);
+  const currentUserName = user?.displayName ?? user?.email ?? user?.uid ?? "";
+  const joined = currentUserName ? members.includes(currentUserName) : false;
 
   useEffect(() => {
     if (!groupId) return;
@@ -99,7 +160,8 @@ export default function DetailScreen() {
   const colors = colorForId(group.id);
   const icon = (group.groupName ?? "??").slice(0, 2).toUpperCase();
   const course = `${group.courseCode ?? ""} ${group.courseNumber ?? ""}`.trim();
-  const location = [group.studyRoom, group.studyAddress].filter(Boolean).join(" · ");
+  const studyAddress = group.studyAddress ?? group.location ?? "";
+  const studyRoom = group.studyRoom ?? "";
   const startTime = group.studyTimeStart?.toDate?.().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ?? group.startTime ?? "—";
   const endTime = group.studyTimeEnd?.toDate?.().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ?? group.endTime ?? "—";
   const scheduleTime = `${startTime} – ${endTime}`;
@@ -157,15 +219,15 @@ export default function DetailScreen() {
           </div>
         </Card>
 
-        <div className="grid grid-cols-2 gap-3.5 mb-4">
-          <InfoBox label="📍 Location" value={location || "TBD"} />
-          <InfoBox label="🗓 Date" value={studyDate} subValue={scheduleTime} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-4">
           <InfoBox
             label="👥 Capacity"
-            className="col-span-2"
             value={<CapacityMeter current={members.length} max={group.maxStudents ?? 0} />}
           />
+          <InfoBox label="⏱️ Schedule" value={studyDate} subValue={scheduleTime} />
         </div>
+
+        <MapLocationCard address={studyAddress} room={studyRoom} />
 
         <ListPanel title={`👥 Members (${memberItems.length})`}>
           <MembersList members={memberItems} />
