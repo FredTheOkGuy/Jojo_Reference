@@ -19,9 +19,11 @@ interface DetailScreenProps {
   onBack: () => void;
   onChat: () => void;
   onLeave: () => void;
+  onDelete: () => void;
   onJoin: () => void;
   onAskToJoin: () => void;
   onUpdate: (data: CreateGroupPayload) => void;
+  onKickMember: (memberInitials: string) => void;
   editInitialData: CreateGroupPayload;
 }
 
@@ -30,9 +32,11 @@ export default function DetailScreen({
   onBack,
   onChat,
   onLeave,
+  onDelete,
   onJoin,
   onAskToJoin,
   onUpdate,
+  onKickMember,
   editInitialData,
 }: DetailScreenProps) {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -116,7 +120,7 @@ export default function DetailScreen({
                       You own this group
                     </p>
                     <p className="text-xs font-medium text-[#9a9282]">
-                      You can edit the group name, course, date, time, capacity, privacy, and location.
+                      You can edit the group, remove members, or delete the whole study group.
                     </p>
                   </div>
 
@@ -146,8 +150,8 @@ export default function DetailScreen({
 
                 <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} className="flex-1">
                   <Button
-                    label="Leave Group"
-                    onClick={onLeave}
+                    label={isOwner ? "Delete Group" : "Leave Group"}
+                    onClick={isOwner ? onDelete : onLeave}
                     variant="danger"
                     fullWidth
                   />
@@ -222,7 +226,12 @@ export default function DetailScreen({
           transition={{ delay: 0.24 }}
         >
           <ListPanel title={`👥 Members (${group.members.length})`}>
-            <MembersList members={group.members} />
+            <MembersList
+              members={group.members}
+              canManageMembers={isOwner}
+              currentUserInitials={CURRENT_USER.initials}
+              onKickMember={onKickMember}
+            />
           </ListPanel>
         </motion.div>
 

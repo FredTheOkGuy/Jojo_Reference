@@ -4,9 +4,17 @@ import { Card, EmptyState } from "./Card";
 
 interface MembersListProps {
   members: Member[];
+  canManageMembers?: boolean;
+  currentUserInitials?: string;
+  onKickMember?: (memberInitials: string) => void;
 }
 
-export function MembersList({ members }: MembersListProps) {
+export function MembersList({
+  members,
+  canManageMembers = false,
+  currentUserInitials,
+  onKickMember,
+}: MembersListProps) {
   if (members.length === 0) {
     return <EmptyState>No members listed.</EmptyState>;
   }
@@ -14,28 +22,57 @@ export function MembersList({ members }: MembersListProps) {
   return (
     <div className="flex flex-col gap-2.5">
       {members.map((member, idx) => (
-        <MemberRow key={`${member.i}-${idx}`} member={member} />
+        <MemberRow
+          key={`${member.i}-${idx}`}
+          member={member}
+          canKick={
+            canManageMembers &&
+            !member.owner &&
+            member.i !== currentUserInitials &&
+            typeof onKickMember === "function"
+          }
+          onKick={() => onKickMember?.(member.i)}
+        />
       ))}
     </div>
   );
 }
 
-export function MemberRow({ member }: { member: Member }) {
+export function MemberRow({
+  member,
+  canKick = false,
+  onKick,
+}: {
+  member: Member;
+  canKick?: boolean;
+  onKick?: () => void;
+}) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 rounded-[12px] border border-transparent p-1.5 transition-all hover:border-[#ddd8cc] hover:bg-[#fffdf8]">
       <div
         className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
         style={{ background: member.c }}
       >
         {member.i}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="font-bold text-sm text-[#1a1610] flex items-center gap-2">
           {member.n}
           {member.owner && <span className="text-xs px-2 py-0.5 rounded-md bg-[#faeade] text-[#c96332] font-bold">Host</span>}
         </div>
         <div className="text-xs text-[#9a9282] font-medium">{member.r}</div>
       </div>
+
+      {canKick && (
+        <button
+          type="button"
+          onClick={onKick}
+          className="flex-shrink-0 rounded-[9px] border-2 border-red-200 bg-[#fff8f6] px-3 py-1.5 text-xs font-black text-red-600 transition-all hover:-translate-y-0.5 hover:bg-red-50"
+          aria-label={`Kick ${member.n} from group`}
+        >
+          Kick
+        </button>
+      )}
     </div>
   );
 }

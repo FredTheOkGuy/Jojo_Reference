@@ -87,6 +87,27 @@ export default function StudyHubApp() {
     );
   };
 
+  const handleKickMember = (groupId: number, memberInitials: string) => {
+    setGroups((currentGroups) =>
+      currentGroups.map((group) => {
+        if (group.id !== groupId) return group;
+
+        const memberToKick = group.members.find((m) => m.i === memberInitials);
+        if (!memberToKick || memberToKick.owner) return group;
+
+        return {
+          ...group,
+          cur: Math.max(0, group.cur - 1),
+          members: group.members.filter((m) => m.i !== memberInitials),
+        };
+      }),
+    );
+  };
+
+  const handleDeleteGroup = (id: number) => {
+    setGroups((currentGroups) => currentGroups.filter((g) => g.id !== id));
+  };
+
   const handleCreateGroup = (data: CreateGroupPayload) => {
     const newGroup: StudyGroup = {
       id: groups.length,
@@ -355,9 +376,30 @@ export default function StudyHubApp() {
             handleLeave(activeGroup.id);
             setScreen(detailFrom === "chats" ? "chats" : "main");
           }}
+          onDelete={() => {
+            const confirmed = window.confirm(
+              "Delete this study group? This removes the group for everyone in this front-end session.",
+            );
+
+            if (!confirmed) return;
+
+            handleDeleteGroup(activeGroup.id);
+            setActiveGroupId(null);
+            setScreen("main");
+          }}
           onJoin={() => handleJoin(activeGroup.id)}
           onAskToJoin={() => setRequestGroupId(activeGroup.id)}
           onUpdate={(data) => handleUpdateGroup(activeGroup.id, data)}
+          onKickMember={(memberInitials) => {
+            const member = activeGroup.members.find((m) => m.i === memberInitials);
+            const confirmed = window.confirm(
+              `Kick ${member?.n || "this member"} from the study group?`,
+            );
+
+            if (!confirmed) return;
+
+            handleKickMember(activeGroup.id, memberInitials);
+          }}
         />
       </>
     );
