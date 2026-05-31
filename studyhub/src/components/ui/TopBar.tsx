@@ -50,7 +50,8 @@ export function BackButton({ onClick, label = "Back" }: { onClick?: () => void; 
 
 export function AvatarButton({ initials = "AJ", onClick }: { initials?: string; onClick?: () => void }) {
   const { user } = useAuth();
-  let displayInitials = user?.displayName.split(" ").map((n) => n[0]).join("").toUpperCase() || initials;
+  const displayInitials =
+    user?.displayName?.split(" ").map((n) => n[0]).join("").toUpperCase() || initials;
   return (
     <button
       type="button"

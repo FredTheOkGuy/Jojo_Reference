@@ -21,18 +21,10 @@ import {
   serverTimestamp,
   updateDoc,
 } from "firebase/firestore";
-import { use, useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
-interface MainScreenProps {
-  filterCode: string;
-  filterNum: string;
-  onJoin: (id: string) => void;
-  onCreate: (data: CreateGroupPayload) => void;
-}
-
-export default function MainScreen({
-}: MainScreenProps) {
+export default function MainScreen() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -81,13 +73,11 @@ export default function MainScreen({
     const filtered = openGroups.filter((g) => {
       const codeMatch = searchCode === "" || g.courseCode === searchCode;
       const numMatch = searchNum === "" || g.courseNum === searchNum;
-
       return codeMatch && numMatch;
     });
 
     setDisplayGroups(filtered);
   }, [searchCode, searchNum, openGroups]);
-  
 
   async function reloadGroups(uid: string, cancelled = false) {
     const joinedGroups = await getMyGroups(uid);
@@ -336,7 +326,7 @@ export default function MainScreen({
       <CreateGroupModal
         open={showCreateModal}
         onClose={() => {
-          setShowCreateModal(false)
+          setShowCreateModal(false);
           reloadGroups(user!.uid);
         }}
         onCreated={() => setShowCreateModal(false)}

@@ -1,11 +1,11 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import SignUpScreen from "@/pages/auth/SignUpScreen";
-import MainScreen from "@/pages/study_groups/MainScreen";
-import DetailScreen from "@/pages/study_groups/DetailScreen";
 import ChatScreen from "@/features/chat/ChatScreen";
 import ChatsScreen from "@/features/chat/ChatsScreen";
 import ProfileScreen from "@/features/profile/ProfileScreen";
+import { useAuth } from "@/hooks/useAuth";
+import SignUpScreen from "@/pages/auth/SignUpScreen";
+import DetailScreen from "@/pages/study_groups/DetailScreen";
+import MainScreen from "@/pages/study_groups/MainScreen";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 export type { CreateGroupPayload, StudyGroup } from "@/app/types";
 
@@ -24,7 +24,7 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/signup" element={<SignUpScreen />} />
 
-      <Route path="/app" element={<MainScreen filterCode="" filterNum="" onJoin={() => {}} onCreate={() => {}} />} />
+      <Route path="/app" element={<MainScreen />} />
       <Route path="/app/profile" element={<ProfileScreen />} />
       <Route path="/app/chats" element={<ChatsScreen />} />
       <Route path="/app/detail/:id" element={<DetailScreen />} />
