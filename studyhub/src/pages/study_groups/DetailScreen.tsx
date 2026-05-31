@@ -9,6 +9,7 @@ import {
 } from "../../components/ui/ContentLists";
 import { GI_COLORS_MAP } from "../../data/mockData";
 import PageNavigator from "../../components/ui/PageNavigator";
+import EmbeddedMap from "../../components/EmbeddedMap";
 
 interface DetailScreenProps {
   group: StudyGroup;
@@ -40,6 +41,7 @@ export default function DetailScreen({
             >
               {group.icon}
             </div>
+
             <div className="min-w-0">
               <div
                 className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-[0.06em] mb-2"
@@ -47,6 +49,7 @@ export default function DetailScreen({
               >
                 {group.course}
               </div>
+
               <h1 className="font-black text-3xl text-[#1a1610] font-['Syne'] leading-tight">
                 {group.name}
               </h1>
@@ -56,6 +59,7 @@ export default function DetailScreen({
           <p className="text-sm text-[#4a4438] leading-relaxed font-medium mb-5">
             {group.desc}
           </p>
+
           <div className="flex gap-2.5">
             <Button
               label="Open Chat"
@@ -63,6 +67,7 @@ export default function DetailScreen({
               variant="primary"
               fullWidth
             />
+
             <Button
               label="Leave Group"
               onClick={onLeave}
@@ -73,16 +78,22 @@ export default function DetailScreen({
         </Card>
 
         <div className="grid grid-cols-2 gap-3.5 mb-4">
-          <InfoBox label="📍 Location" value={group.location} />
+          <InfoBox
+            label="👥 Capacity"
+            value={<CapacityMeter current={group.cur} max={group.max} />}
+          />
+
           <InfoBox
             label="🕐 Schedule"
             value={group.days}
             subValue={group.time}
           />
-          <InfoBox
-            label="👥 Capacity"
-            className="col-span-2"
-            value={<CapacityMeter current={group.cur} max={group.max} />}
+        </div>
+
+        <div className="mb-4">
+          <EmbeddedMap
+            roomLabel={group.location}
+            mapLocation={group.mapLocation}
           />
         </div>
 

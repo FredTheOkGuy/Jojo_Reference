@@ -1,6 +1,3 @@
-// This file contains all hardcoded data
-// Replace this with API/database calls later
-
 import type { StudyGroup } from "../app/types";
 
 export const INITIAL_GROUPS: StudyGroup[] = [
@@ -15,7 +12,14 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 7,
     max: 10,
     joined: true,
-    location: "Hall Building H-521",
+
+    // FYI/custom room field
+    location: "H-521",
+
+    // Real map-searchable location
+    mapLocation:
+      "Concordia University Hall Building, 1455 De Maisonneuve Blvd W, Montreal, QC",
+
     days: "Tuesday & Thursday",
     time: "5:00 PM – 7:00 PM",
     desc: "Working through algorithm design, complexity analysis, and exam prep.",
@@ -59,7 +63,14 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 5,
     max: 8,
     joined: false,
-    location: "Library LB 320",
+
+    // FYI/custom room field
+    location: "LB-320",
+
+    // Real map-searchable location
+    mapLocation:
+      "Concordia University Webster Library, 1400 De Maisonneuve Blvd W, Montreal, QC",
+
     days: "Monday & Wednesday",
     time: "4:00 PM – 5:30 PM",
     desc: "Integration techniques and calculus problem solving.",
@@ -80,7 +91,14 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 6,
     max: 10,
     joined: false,
+
+    // FYI/custom room field
     location: "EV 1.210",
+
+    // Real map-searchable location
+    mapLocation:
+      "Concordia University EV Building, 1515 St Catherine St W, Montreal, QC",
+
     days: "Friday",
     time: "6:00 PM – 8:00 PM",
     desc: "Digital circuits, logic gates, and Verilog simulations.",
@@ -92,7 +110,6 @@ export const INITIAL_GROUPS: StudyGroup[] = [
   },
 ];
 
-// Color map - can be imported and reused everywhere
 export const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
   "gi-orange": { bg: "#faeade", text: "#c96332" },
   "gi-green": { bg: "#e8edda", text: "#5a6e3a" },
@@ -101,7 +118,6 @@ export const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
   "gi-gold": { bg: "#f7edcc", text: "#8a6a1e" },
 };
 
-// User profile data - can be replaced with real user data
 export const CURRENT_USER = {
   initials: "AJ",
   name: "Alex Johnson",

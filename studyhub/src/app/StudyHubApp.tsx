@@ -9,7 +9,14 @@ import ProfileScreen from "../features/profile/ProfileScreen";
 import { logout } from "../services/firebase/auth";
 
 import type { CreateGroupPayload, StudyGroup } from "./types";
-export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup } from "./types";
+
+export type {
+  CreateGroupPayload,
+  DocumentType,
+  Member,
+  Message,
+  StudyGroup,
+} from "./types";
 
 type Screen = "login" | "main" | "chats" | "detail" | "chat" | "profile";
 
@@ -26,12 +33,19 @@ export default function StudyHubApp() {
     setGroups((currentGroups) =>
       currentGroups.map((g) => {
         if (g.id !== id || g.joined || g.cur >= g.max) return g;
+
         return {
           ...g,
           joined: true,
           cur: g.cur + 1,
           members: [
-            { i: CURRENT_USER.initials, n: CURRENT_USER.name, r: CURRENT_USER.school, owner: false, c: "#c96332" },
+            {
+              i: CURRENT_USER.initials,
+              n: CURRENT_USER.name,
+              r: CURRENT_USER.school,
+              owner: false,
+              c: "#c96332",
+            },
             ...g.members,
           ],
           messages: [
@@ -42,7 +56,10 @@ export default function StudyHubApp() {
               mine: true,
               c: "#c96332",
               text: "Hey everyone! Just joined the group 👋",
-              time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+              time: new Date().toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
             },
           ],
         };
@@ -70,20 +87,44 @@ export default function StudyHubApp() {
       id: groups.length,
       name: data.name || "New Study Group",
       course: `${data.code || "MISC"} ${data.number || "000"}`,
-      icon: (data.name || data.code || "NEW").split(" ").map((part) => part[0]).join("").substring(0, 2).toUpperCase(),
+      icon: (data.name || data.code || "NEW")
+        .split(" ")
+        .map((part) => part[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase(),
       gi: ["gi-orange", "gi-green", "gi-blue", "gi-purple", "gi-gold"][
         groups.length % 5
       ],
       cur: 1,
       max: data.maxMembers || 8,
       joined: true,
+
+      // FYI/custom room field
       location: data.location || "TBD",
+
+      // Real physical map location field
+      mapLocation:
+        data.mapLocation ||
+        data.location ||
+        "Concordia University, Montreal, QC",
+
       days: data.day || "Monday",
       time: data.time ? `${data.time} – onwards` : "17:00 – onwards",
-      desc: `A new study group for ${data.code || "MISC"} ${data.number || "000"}.`,
+      desc: `A new study group for ${data.code || "MISC"} ${
+        data.number || "000"
+      }.`,
       badgeBg: "#faeade",
       badgeColor: "#c96332",
-      members: [{ i: CURRENT_USER.initials, n: CURRENT_USER.name, r: CURRENT_USER.school, owner: true, c: "#c96332" }],
+      members: [
+        {
+          i: CURRENT_USER.initials,
+          n: CURRENT_USER.name,
+          r: CURRENT_USER.school,
+          owner: true,
+          c: "#c96332",
+        },
+      ],
       docs: [],
       messages: [
         {
@@ -92,12 +133,16 @@ export default function StudyHubApp() {
           mine: true,
           c: "#c96332",
           text: "I created this group — welcome everyone! 🎉",
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          time: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
         },
       ],
       filterCode: data.code || "MISC",
       filterNum: data.number || "000",
     };
+
     setGroups([...groups, newGroup]);
   };
 
@@ -183,7 +228,10 @@ export default function StudyHubApp() {
     );
   }
 
-  const activeGroup = activeGroupId === null ? undefined : groups.find((g) => g.id === activeGroupId);
+  const activeGroup =
+    activeGroupId === null
+      ? undefined
+      : groups.find((g) => g.id === activeGroupId);
 
   if (screen === "detail" && activeGroup) {
     return (
@@ -213,7 +261,13 @@ export default function StudyHubApp() {
   }
 
   if (screen === "profile") {
-    return <ProfileScreen groups={groups} onBack={() => setScreen("main")} onSignOut={handleSignOut} />;
+    return (
+      <ProfileScreen
+        groups={groups}
+        onBack={() => setScreen("main")}
+        onSignOut={handleSignOut}
+      />
+    );
   }
 
   return <div>Unknown screen</div>;
