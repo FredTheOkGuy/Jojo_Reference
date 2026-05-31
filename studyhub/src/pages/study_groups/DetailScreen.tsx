@@ -191,18 +191,27 @@ export default function DetailScreen() {
 
   const handleKickMember = async (memberName: string) => {
     if (!groupId || !isOwner || !memberName) return;
-    if (memberName === group.creatorName || memberName === currentUserName)
-      return;
+    if (memberName === group.creatorName || memberName === currentUserName) return;
 
-    const confirmed = window.confirm(
-      `Kick ${memberName} from this study group?`,
-    );
+    const confirmed = window.confirm(`Kick ${memberName} from this study group?`);
     if (!confirmed) return;
 
     try {
-      await updateDoc(doc(db, "study_groups", groupId), {
-        members: arrayRemove(memberName),
-      });
+      // Find the kicked user's uid so we can remove groupId from their groupIds
+      const usersSnap = await getDocs(collection(db, "users"));
+      const kickedUserDoc = usersSnap.docs.find(
+        (d) => d.data().displayName === memberName || d.data().email === memberName
+      );
+      const kickedUserId = kickedUserDoc?.id;
+
+      if (kickedUserId) {
+        await leaveStudyGroup(groupId, memberName, kickedUserId);
+      } else {
+        // If we can't find their uid, just remove from members array
+        await updateDoc(doc(db, "study_groups", groupId), {
+          members: arrayRemove(memberName),
+        });
+      }
 
       await addDoc(collection(db, "study_groups", groupId, "chat_messages"), {
         sender: "System",
@@ -210,9 +219,7 @@ export default function DetailScreen() {
         timestamp: serverTimestamp(),
       });
 
-      await handleLeave(memberName, targetUserId, false, true);
-
-      setMembers((prev) => prev.filter((member) => member !== memberName));
+      setMembers((prev) => prev.filter((m) => m !== memberName));
     } catch (e) {
       console.error(e);
       alert("Failed to kick this member.");
