@@ -1,3 +1,4 @@
+import { useAuth } from "@/hooks/useAuth";
 import type { ReactNode } from "react";
 
 interface TopBarProps {
@@ -47,18 +48,16 @@ export function BackButton({ onClick, label = "Back" }: { onClick?: () => void; 
   );
 }
 
-export function AvatarButton({ onClick }: { initials?: string; onClick?: () => void }) {
+export function AvatarButton({ initials = "AJ", onClick }: { initials?: string; onClick?: () => void }) {
+  const { user } = useAuth();
+  let displayInitials = user?.displayName.split(" ").map((n) => n[0]).join("").toUpperCase() || initials;
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-label="Open profile"
-      className="w-9 h-9 rounded-full bg-[#c96332] text-white flex items-center justify-center transition-all hover:shadow-lg cursor-pointer border-2 border-[#f0b897]"
+      className="w-9 h-9 rounded-full bg-[#c96332] text-white font-bold text-sm flex items-center justify-center transition-all hover:shadow-lg cursor-pointer border-2 border-[#f0b897]"
     >
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-        <path d="M20 21a8 8 0 0 0-16 0" />
-        <circle cx="12" cy="7" r="4" />
-      </svg>
+      {displayInitials}
     </button>
   );
 }
