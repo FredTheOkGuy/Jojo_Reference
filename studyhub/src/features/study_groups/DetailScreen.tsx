@@ -19,6 +19,8 @@ interface DetailScreenProps {
   onBack: () => void;
   onChat: () => void;
   onLeave: () => void;
+  onJoin: () => void;
+  onAskToJoin: () => void;
   onUpdate: (data: CreateGroupPayload) => void;
   editInitialData: CreateGroupPayload;
 }
@@ -28,6 +30,8 @@ export default function DetailScreen({
   onBack,
   onChat,
   onLeave,
+  onJoin,
+  onAskToJoin,
   onUpdate,
   editInitialData,
 }: DetailScreenProps) {
@@ -36,6 +40,9 @@ export default function DetailScreen({
   const isOwner = group.members.some(
     (member) => member.owner && member.i === CURRENT_USER.initials,
   );
+  const canAccessGroupTools = group.joined;
+  const isFull = group.cur >= group.max;
+  const requestPending = group.isPrivate && group.joinRequested && !group.joined;
 
   return (
     <div className="flex min-h-[100dvh] w-full flex-col overflow-x-hidden bg-[#f2ede3]">
@@ -126,25 +133,52 @@ export default function DetailScreen({
               </motion.div>
             )}
 
-            <div className="flex flex-col gap-2.5 sm:flex-row">
-              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} className="flex-1">
-                <Button
-                  label="Open Chat"
-                  onClick={onChat}
-                  variant="primary"
-                  fullWidth
-                />
-              </motion.div>
+            {canAccessGroupTools ? (
+              <div className="flex flex-col gap-2.5 sm:flex-row">
+                <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} className="flex-1">
+                  <Button
+                    label="Open Chat"
+                    onClick={onChat}
+                    variant="primary"
+                    fullWidth
+                  />
+                </motion.div>
 
-              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} className="flex-1">
-                <Button
-                  label="Leave Group"
-                  onClick={onLeave}
-                  variant="danger"
-                  fullWidth
-                />
-              </motion.div>
-            </div>
+                <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} className="flex-1">
+                  <Button
+                    label="Leave Group"
+                    onClick={onLeave}
+                    variant="danger"
+                    fullWidth
+                  />
+                </motion.div>
+              </div>
+            ) : (
+              <div className="rounded-[14px] border border-[#ddd8cc] bg-[#fffdf8] p-3">
+                <p className="mb-3 text-sm font-medium leading-relaxed text-[#4a4438]">
+                  You can view this group's details before joining. Join the group to unlock chat access and member-only actions.
+                </p>
+
+                {requestPending ? (
+                  <div className="rounded-[10px] border border-[#ddd8cc] bg-[#edeae2] px-4 py-2 text-center text-sm font-bold text-[#9a9282]">
+                    Request Sent
+                  </div>
+                ) : isFull ? (
+                  <div className="rounded-[10px] border border-[#ddd8cc] bg-[#edeae2] px-4 py-2 text-center text-sm font-bold text-[#9a9282]">
+                    Group Full
+                  </div>
+                ) : (
+                  <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }}>
+                    <Button
+                      label={group.isPrivate ? "Ask to Join" : "Join Group"}
+                      onClick={group.isPrivate ? onAskToJoin : onJoin}
+                      variant="primary"
+                      fullWidth
+                    />
+                  </motion.div>
+                )}
+              </div>
+            )}
           </Card>
         </motion.div>
 

@@ -31,7 +31,7 @@ export default function GroupCard({
   const isFull = group.cur >= group.max;
   const colors = GI_COLORS_MAP[group.gi] || GI_COLORS_MAP["gi-orange"];
   const requestPending = group.isPrivate && group.joinRequested && !joined;
-  const clickable = joined || group.isPrivate;
+  const clickable = Boolean(onDetail);
 
   const handleClick = () => {
     if (clickable && onDetail) {
@@ -50,6 +50,15 @@ export default function GroupCard({
       whileTap={clickable ? { scale: 0.985 } : undefined}
       className="mb-3 flex w-full flex-col gap-4 rounded-[14px] border border-[#ddd8cc] bg-[#faf8f4] p-4 shadow-sm transition-colors hover:border-[#f0b897] hover:shadow-lg sm:flex-row sm:items-center sm:p-5"
       onClick={handleClick}
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (clickable && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
+      aria-label={clickable ? `View details for ${group.name}` : undefined}
       style={{ cursor: clickable ? "pointer" : "default" }}
     >
       <div className="flex min-w-0 flex-1 gap-3 sm:gap-4">
@@ -137,6 +146,7 @@ export default function GroupCard({
             animate={{ x: joined ? [0, 3, 0] : 0 }}
             transition={{ duration: 1.6, repeat: joined ? Infinity : 0, repeatDelay: 1.2 }}
             className="text-base font-bold text-[#9a9282]"
+            aria-hidden="true"
           >
             ›
           </motion.span>

@@ -336,20 +336,30 @@ export default function StudyHubApp() {
 
   if (screen === "detail" && activeGroup) {
     return (
-      <DetailScreen
-        group={activeGroup}
-        editInitialData={groupToFormData(activeGroup)}
-        onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
-        onChat={() => {
-          setChatFrom("detail");
-          setScreen("chat");
-        }}
-        onLeave={() => {
-          handleLeave(activeGroup.id);
-          setScreen(detailFrom === "chats" ? "chats" : "main");
-        }}
-        onUpdate={(data) => handleUpdateGroup(activeGroup.id, data)}
-      />
+      <>
+        <AskToJoinModal
+          open={requestGroupId !== null}
+          group={requestGroup}
+          onClose={() => setRequestGroupId(null)}
+          onConfirm={handleConfirmJoinRequest}
+        />
+        <DetailScreen
+          group={activeGroup}
+          editInitialData={groupToFormData(activeGroup)}
+          onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
+          onChat={() => {
+            setChatFrom("detail");
+            setScreen("chat");
+          }}
+          onLeave={() => {
+            handleLeave(activeGroup.id);
+            setScreen(detailFrom === "chats" ? "chats" : "main");
+          }}
+          onJoin={() => handleJoin(activeGroup.id)}
+          onAskToJoin={() => setRequestGroupId(activeGroup.id)}
+          onUpdate={(data) => handleUpdateGroup(activeGroup.id, data)}
+        />
+      </>
     );
   }
 

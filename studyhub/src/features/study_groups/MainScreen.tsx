@@ -160,6 +160,7 @@ export default function MainScreen({
                   key={group.id}
                   group={group}
                   joined={false}
+                  onDetail={onDetail}
                   onJoin={() => onJoin(group.id)}
                 />
               ))
