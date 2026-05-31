@@ -181,9 +181,9 @@ Keep it clear and concise so the student can follow it during the session.
 
   const studyGuide = response.text ?? "No study guide generated.";
 
-  await addDoc(collection(db, "study_groups", groupId), {
+  await updateDoc(doc(db, "study_groups", groupId), {
     studyGuide: studyGuide,
-    createdAt: serverTimestamp(),
+    studyGuideGeneratedAt: serverTimestamp(),
   });
 }
 
@@ -219,4 +219,3 @@ export function listenToMessages(
     callback(messages);
   });
 }
-
