@@ -51,6 +51,8 @@ export default function CreateGroupModal({ open, onClose, onCreated }: CreateGro
         groupIds: arrayUnion(groupId),
       });
 
+      
+
       setName(''); setCode(''); setNumber(''); setRoom(''); setAddress('');
       setDate(''); setStartTime('17:00'); setEndTime('19:00'); setMaxStudents('8'); setIsPrivate(false);
 

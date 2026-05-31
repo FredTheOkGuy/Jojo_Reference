@@ -335,7 +335,10 @@ export default function MainScreen({
 
       <CreateGroupModal
         open={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
+        onClose={() => {
+          setShowCreateModal(false)
+          reloadGroups(user!.uid);
+        }}
         onCreated={() => setShowCreateModal(false)}
       />
     </div>
