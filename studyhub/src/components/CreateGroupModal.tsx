@@ -26,7 +26,7 @@ export default function CreateGroupModal({
   const [number, setNumber] = useState("");
   const [location, setLocation] = useState("");
   const [mapLocation, setMapLocation] = useState("");
-  const [day, setDay] = useState("Monday");
+  const [date, setDate] = useState("");
   const [time, setTime] = useState("17:00");
   const [maxMembers, setMaxMembers] = useState("8");
 
@@ -40,7 +40,7 @@ export default function CreateGroupModal({
       location: location || "TBD",
       mapLocation:
         mapLocation || location || "Concordia University, Montreal, QC",
-      day,
+      day: date,
       time,
       maxMembers: parseInt(maxMembers) || 8,
     });
@@ -50,7 +50,7 @@ export default function CreateGroupModal({
     setNumber("");
     setLocation("");
     setMapLocation("");
-    setDay("Monday");
+    setDate("");
     setTime("17:00");
     setMaxMembers("8");
   };
@@ -155,22 +155,15 @@ export default function CreateGroupModal({
           <div className="flex gap-2.5 mb-4">
             <div className="flex-1">
               <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                Day
+                Date
               </label>
 
-              <select
-                value={day}
-                onChange={(e) => setDay(e.target.value)}
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
                 className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-              >
-                <option>Monday</option>
-                <option>Tuesday</option>
-                <option>Wednesday</option>
-                <option>Thursday</option>
-                <option>Friday</option>
-                <option>Saturday</option>
-                <option>Sunday</option>
-              </select>
+              />
             </div>
 
             <div className="flex-1">

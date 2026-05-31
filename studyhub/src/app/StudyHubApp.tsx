@@ -109,7 +109,7 @@ export default function StudyHubApp() {
         data.location ||
         "Concordia University, Montreal, QC",
 
-      days: data.day || "Monday",
+      days: data.day || "No date selected",
       time: data.time ? `${data.time} – onwards` : "17:00 – onwards",
       desc: `A new study group for ${data.code || "MISC"} ${
         data.number || "000"
