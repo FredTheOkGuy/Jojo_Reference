@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { createStudyGroup } from '@/queries/study_group';
-import { doc, updateDoc, arrayUnion } from 'firebase/firestore';
+import { createStudyGroup, generateStudyGuide, uploadDocument } from '@/queries/study_group';
 import { db } from '@/services/firebase/firebase';
+import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
+import { useState } from 'react';
 
 interface CreateGroupModalProps {
   open: boolean;
@@ -22,7 +22,10 @@ export default function CreateGroupModal({ open, onClose, onCreated }: CreateGro
   const [endTime, setEndTime] = useState('19:00');
   const [maxStudents, setMaxStudents] = useState('8');
   const [isPrivate, setIsPrivate] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [chapters, setChapters] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +33,11 @@ export default function CreateGroupModal({ open, onClose, onCreated }: CreateGro
     setSubmitting(true);
 
     const creatorName = user.displayName ?? user.email ?? user.uid;
+    const startDate = new Date(`${date}T${startTime}`);
+    const endDate = new Date(`${date}T${endTime}`);
 
     try {
+      setSubmitStatus('Creating group…');
       const groupId = await createStudyGroup(
         name || 'New Study Group',
         code.toUpperCase() || 'MISC',
@@ -40,25 +46,34 @@ export default function CreateGroupModal({ open, onClose, onCreated }: CreateGro
         address || 'Concordia University, Montreal, QC',
         room || 'TBD',
         new Date(date),
-        new Date(`${date}T${startTime}`),
-        new Date(`${date}T${endTime}`),
+        startDate,
+        endDate,
         parseInt(maxStudents) || 8,
         isPrivate
       );
 
-      // Add group to the user's groupIds
       await updateDoc(doc(db, 'users', user.uid), {
         groupIds: arrayUnion(groupId),
       });
 
+      if (file) {
+        setSubmitStatus('Uploading document…');
+        await uploadDocument(groupId, file, creatorName);
+
+        setSubmitStatus('Generating study guide with AI…');
+        await generateStudyGuide(file, startTime, endTime, chapters || 'All chapters', groupId);
+      }
+
       setName(''); setCode(''); setNumber(''); setRoom(''); setAddress('');
-      setDate(''); setStartTime('17:00'); setEndTime('19:00'); setMaxStudents('8'); setIsPrivate(false);
+      setDate(''); setStartTime('17:00'); setEndTime('19:00'); setMaxStudents('8');
+      setIsPrivate(false); setFile(null); setChapters(''); setSubmitStatus('');
 
       onCreated?.();
       onClose();
     } catch (err) {
       console.error('Failed to create group:', err);
       alert('Failed to create group. Please try again.');
+      setSubmitStatus('');
     } finally {
       setSubmitting(false);
     }
@@ -130,8 +145,37 @@ export default function CreateGroupModal({ open, onClose, onCreated }: CreateGro
             <span className="text-sm font-medium text-[#4a4438]">Private group (members must request to join)</span>
           </label>
 
+          <div className="h-px bg-[#ddd8cc] mb-5" />
+
+          <div className="mb-4">
+            <label className={labelCls}>Study Material (optional)</label>
+            <label className="flex items-center gap-3 px-4 py-3 bg-[#edeae2] border-2 border-dashed border-[#ddd8cc] rounded-[9px] cursor-pointer transition-all hover:border-[#c96332] hover:bg-[#faf8f4]">
+              <span className="text-lg">📄</span>
+              <span className="text-sm font-medium text-[#4a4438] flex-1 truncate">
+                {file ? file.name : 'Upload PDF, DOCX, or PPTX…'}
+              </span>
+              {file && (
+                <button type="button" onClick={(e) => { e.preventDefault(); setFile(null); }} className="text-xs text-[#9a9282] hover:text-[#c96332] font-bold">✕</button>
+              )}
+              <input type="file" accept=".pdf,.docx,.pptx,application/pdf" className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+            </label>
+            <p className="text-xs text-[#9a9282] mt-1.5 font-medium">A study guide will be auto-generated with AI when you upload a file.</p>
+          </div>
+
+          {file && (
+            <div className="mb-5">
+              <label className={labelCls}>Chapters / Topics to focus on</label>
+              <input type="text" placeholder="e.g. Chapter 3, 4 — Recursion and Sorting" value={chapters} onChange={(e) => setChapters(e.target.value)} className={inputCls} />
+            </div>
+          )}
+
           <button type="submit" disabled={submitting} className="w-full py-3.5 bg-[#c96332] text-white font-bold rounded-[9px] transition-all hover:bg-[#a34e24] active:scale-95 hover:shadow-lg disabled:opacity-60">
-            {submitting ? 'Creating…' : 'Create Group →'}
+            {submitting ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                {submitStatus || 'Creating…'}
+              </span>
+            ) : 'Create Group →'}
           </button>
         </form>
       </div>

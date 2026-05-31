@@ -134,8 +134,8 @@ export async function uploadDocument(groupId : string,
 
 export async function generateStudyGuide(
   file: File,
-  startTime: Date,
-  endTime: Date,
+  startTime: string,
+  endTime: string,
   chapters: string,
   groupId: string
 ) {
@@ -149,12 +149,12 @@ export async function generateStudyGuide(
     reader.readAsDataURL(file);
   });
 
-  const totalMinutes = Math.round((endTime.getTime() - startTime.getTime()) / 60000);
+  const totalMinutes = Math.round((new Date(`1970-01-01T${endTime}`).getTime() - new Date(`1970-01-01T${startTime}`).getTime()) / 60000);
 
   const prompt = `
 You are helping a student plan a focused study session.
 
-Study window: ${startTime.toLocaleString()} to ${endTime.toLocaleString()} (${totalMinutes} minutes total).
+Study window: ${startTime} to ${endTime} (${totalMinutes} minutes total).
 Chapters to study: ${chapters}
 
 Using the attached document, create a study guide that:
@@ -181,9 +181,9 @@ Keep it clear and concise so the student can follow it during the session.
 
   const studyGuide = response.text ?? "No study guide generated.";
 
-  await addDoc(collection(db, "study_groups", groupId), {
+  await updateDoc(doc(db, "study_groups", groupId), {
     studyGuide: studyGuide,
-    createdAt: serverTimestamp(),
+    studyGuideGeneratedAt: serverTimestamp(),
   });
 }
 

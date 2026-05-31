@@ -4,7 +4,7 @@ import { DocumentsList, ListPanel, MembersList } from "@/components/ui/ContentLi
 import PageNavigator from "@/components/ui/PageNavigator";
 import TopBar, { BackButton } from "@/components/ui/TopBar";
 import { useAuth } from "@/hooks/useAuth";
-import { deleteStudyGroup, leaveStudyGroup } from "@/queries/study_group";
+import { leaveStudyGroup } from "@/queries/study_group";
 import { db } from "@/services/firebase/firebase";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -32,6 +32,7 @@ export default function DetailScreen() {
   const [group, setGroup] = useState<any>(null);
   const [members, setMembers] = useState<string[]>([]);
   const [docs, setDocs] = useState<any[]>([]);
+  const [studyGuide, setStudyGuide] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export default function DetailScreen() {
         const data = snap.data();
         setGroup({ id: snap.id, ...data });
         setMembers(data.members ?? []);
+        setStudyGuide(data.studyGuide ?? null);
 
         const docsSnap = await getDocs(collection(db, "study_groups", groupId!, "docs"));
         setDocs(docsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -61,9 +63,6 @@ export default function DetailScreen() {
     try {
       const studentName = user.displayName ?? user.email ?? user.uid;
       await leaveStudyGroup(groupId, studentName, user.uid);
-      if (group.creatorName === studentName) {
-        deleteStudyGroup(groupId);
-      }
       navigate("/app");
     } catch (e) {
       console.error(e);
@@ -155,6 +154,29 @@ export default function DetailScreen() {
         <ListPanel title="📂 Documents">
           <DocumentsList documents={docItems} />
         </ListPanel>
+
+        {studyGuide && (
+          <ListPanel title="🧠 AI Study Guide">
+            <div className="px-1 py-2">
+              {studyGuide.split('\n').map((line, i) => {
+                const isHeading = line.startsWith('##') || (line.startsWith('**') && line.endsWith('**'));
+                const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '');
+                if (!clean.trim()) return <div key={i} className="h-2" />;
+                return (
+                  <p
+                    key={i}
+                    className={isHeading
+                      ? 'text-sm font-bold text-[#1a1610] mt-4 mb-1'
+                      : 'text-sm text-[#4a4438] leading-relaxed mb-1'
+                    }
+                  >
+                    {clean}
+                  </p>
+                );
+              })}
+            </div>
+          </ListPanel>
+        )}
       </main>
     </div>
   );
