@@ -1,201 +1,34 @@
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom"
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import SignUpScreen from "@/pages/auth/SignUpScreen";
+import MainScreen from "@/pages/study_groups/MainScreen";
+import DetailScreen from "@/pages/study_groups/DetailScreen";
+import ChatScreen from "@/features/chat/ChatScreen";
+import ChatsScreen from "@/features/chat/ChatsScreen";
+import ProfileScreen from "@/features/profile/ProfileScreen";
 
-import { useAuth } from "@/hooks/useAuth"
-import SignUpScreen from "@/pages/auth/SignUpScreen"
-import MainScreen from "@/pages/study_groups/MainScreen"
-import { useState } from "react"
-import { CURRENT_USER, INITIAL_GROUPS } from "@/data/mockData";
-import { logout } from "@/services/firebase/auth"
-
-import type { CreateGroupPayload, StudyGroup_old } from "@/app/types";
-import ProfileScreen from "@/features/profile/ProfileScreen"
-import ChatsScreen from "@/features/chat/ChatsScreen"
-import DetailScreen from "@/pages/study_groups/DetailScreen"
-export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup_old as StudyGroup } from "@/app/types";
-
-type Screen = "login" | "main" | "chats" | "detail" | "chat" | "profile";
+export type { CreateGroupPayload, StudyGroup } from "@/app/types";
 
 export default function AppRoutes() {
-  const { user, loading } = useAuth()
-  const [groups, setGroups] = useState<StudyGroup_old[]>(INITIAL_GROUPS);
-  const [filterCode, setFilterCode] = useState("");
-  const [filterNum, setFilterNum] = useState("");
-  const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
-  const [detailFrom, setDetailFrom] = useState<"main" | "chats">("main");
-  const [chatFrom, setChatFrom] = useState<"detail" | "chats">("detail");
-  const [screen, setScreen] = useState<Screen>("login");
+  const { user, loading } = useAuth();
 
-  const navigate = useNavigate();
-
-  const handleJoin = (id: number) => {
-    setGroups((currentGroups) =>
-      currentGroups.map((g) => {
-        if (g.id !== id || g.joined || g.cur >= g.max) return g;
-        return {
-          ...g,
-          joined: true,
-          cur: g.cur + 1,
-          members: [
-            { i: CURRENT_USER.initials, n: CURRENT_USER.name, r: CURRENT_USER.school, owner: false, c: "#c96332" },
-            ...g.members,
-          ],
-          messages: [
-            ...g.messages,
-            {
-              sender: CURRENT_USER.initials,
-              senderFull: "You",
-              mine: true,
-              c: "#c96332",
-              text: "Hey everyone! Just joined the group 👋",
-              time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-            },
-          ],
-        };
-      }),
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#f2ede3]">
+        <div className="w-10 h-10 border-4 border-[#ddd8cc] border-t-[#c96332] rounded-full animate-spin" />
+      </div>
     );
-  };
-
-  const handleLeave = (id: number) => {
-    setGroups((currentGroups) =>
-      currentGroups.map((g) =>
-        g.id === id
-          ? {
-              ...g,
-              joined: false,
-              cur: Math.max(0, g.cur - 1),
-              members: g.members.filter((m) => m.i !== CURRENT_USER.initials),
-            }
-          : g,
-      ),
-    );
-  };
-
-  const handleCreateGroup = (data: CreateGroupPayload) => {
-    const newGroup: StudyGroup_old = {
-      id: groups.length,
-      name: data.name || "New Study Group",
-      course: `${data.code || "MISC"} ${data.number || "000"}`,
-      icon: (data.name || data.code || "NEW").split(" ").map((part) => part[0]).join("").substring(0, 2).toUpperCase(),
-      gi: ["gi-orange", "gi-green", "gi-blue", "gi-purple", "gi-gold"][
-        groups.length % 5
-      ],
-      cur: 1,
-      max: data.maxMembers || 8,
-      joined: true,
-      location: data.location || "TBD",
-      days: data.day || "Monday",
-      time: data.time ? `${data.time} – onwards` : "17:00 – onwards",
-      desc: `A new study group for ${data.code || "MISC"} ${data.number || "000"}.`,
-      badgeBg: "#faeade",
-      badgeColor: "#c96332",
-      members: [{ i: CURRENT_USER.initials, n: CURRENT_USER.name, r: CURRENT_USER.school, owner: true, c: "#c96332" }],
-      docs: [],
-      messages: [
-        {
-          sender: CURRENT_USER.initials,
-          senderFull: "You",
-          mine: true,
-          c: "#c96332",
-          text: "I created this group — welcome everyone! 🎉",
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        },
-      ],
-      filterCode: data.code || "MISC",
-      filterNum: data.number || "000",
-    };
-    setGroups([...groups, newGroup]);
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await logout();
-    } finally {
-      setActiveGroupId(null);
-      navigate("/signup");
-    }
-  };
-
-  const handleSendMessage = (text: string) => {
-    if (activeGroupId !== null) {
-      setGroups((currentGroups) =>
-        currentGroups.map((g) =>
-          g.id === activeGroupId
-            ? {
-                ...g,
-                messages: [
-                  ...g.messages,
-                  {
-                    sender: CURRENT_USER.initials,
-                    senderFull: "You",
-                    mine: true,
-                    c: "#c96332",
-                    text,
-                    time: new Date().toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }),
-                  },
-                ],
-              }
-            : g,
-        ),
-      );
-    }
-  };
-
-  const activeGroup = activeGroupId === null ? undefined : groups.find((g) => g.id === activeGroupId);
+  }
 
   return (
     <Routes>
       <Route path="/signup" element={<SignUpScreen />} />
 
-      <Route path="/app" element={<MainScreen 
-        filterCode={filterCode}
-        filterNum={filterNum}
-        onJoin={handleJoin}
-        onCreate={handleCreateGroup}
-      />} />
-
-      <Route path="/app/profile" element={
-        <ProfileScreen 
-          groups={groups} 
-          onBack={() => navigate("/app")} 
-          onSignOut={handleSignOut} 
-        />
-      }/>
-
-      <Route path="/app/chats" element={
-        <ChatsScreen
-          groups={groups}
-          onDetail={(id) => {
-            setActiveGroupId(id);
-            setDetailFrom("chats");
-            setScreen("detail");
-          }}
-          onChat={(id) => {
-            setActiveGroupId(id);
-            setChatFrom("chats");
-            setScreen("chat");
-          }}
-          onBack={() => setScreen("main")}
-          onProfile={() => setScreen("profile")}
-        />
-      }/>
-
-      <Route path="/app/detail" element={
-        <DetailScreen
-          group={activeGroup}
-          onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
-          onChat={() => {
-            setChatFrom("detail");
-            setScreen("chat");
-          }}
-          onLeave={() => {
-            handleLeave(activeGroup.id);
-            setScreen(detailFrom === "chats" ? "chats" : "main");
-          }}
-        />
-      }/>
+      <Route path="/app" element={<MainScreen filterCode="" filterNum="" onJoin={() => {}} onCreate={() => {}} />} />
+      <Route path="/app/profile" element={<ProfileScreen />} />
+      <Route path="/app/chats" element={<ChatsScreen />} />
+      <Route path="/app/detail/:id" element={<DetailScreen />} />
+      <Route path="/app/chat/:id" element={<ChatScreen />} />
 
       {user ? (
         <Route path="/*" element={<Navigate to="/app" />} />
@@ -203,5 +36,5 @@ export default function AppRoutes() {
         <Route path="/*" element={<Navigate to="/signup" />} />
       )}
     </Routes>
-  )
+  );
 }
