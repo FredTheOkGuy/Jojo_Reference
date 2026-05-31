@@ -26,6 +26,7 @@ interface MainScreenProps {
   onChats: () => void;
   onProfile: () => void;
   onJoin: (id: number) => void;
+  onAskToJoin: (id: number) => void;
   onCreate: (data: CreateGroupPayload) => void;
 }
 
@@ -52,11 +53,13 @@ export default function MainScreen({
   onChats,
   onProfile,
   onJoin,
+  onAskToJoin,
   onCreate,
 }: MainScreenProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const myGroups = groups.filter((g) => g.joined);
-  const openGroups = groups.filter((g) => !g.joined);
+  const openGroups = groups.filter((g) => !g.joined && !g.isPrivate);
+  const privateGroups = groups.filter((g) => !g.joined && g.isPrivate);
 
   const normalize = (value?: string) => value?.toLowerCase().trim() ?? "";
 
@@ -70,7 +73,7 @@ export default function MainScreen({
       .filter(Boolean)
       .join(" ");
 
-  const filteredOpenGroups = openGroups.filter((group) => {
+  const matchesFilters = (group: StudyGroup) => {
     const schoolQuery = normalize(filterSchool);
     const numberQuery = normalize(filterNum);
     const courseNameQuery = normalize(filterCourseName);
@@ -86,10 +89,13 @@ export default function MainScreen({
       );
 
     return schoolMatch && numberMatch && courseNameMatch;
-  });
+  };
+
+  const filteredOpenGroups = openGroups.filter(matchesFilters);
+  const filteredPrivateGroups = privateGroups.filter(matchesFilters);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f2ede3]">
+    <div className="flex min-h-[100dvh] w-full flex-col overflow-x-hidden bg-[#f2ede3]">
       <TopBar
         left={
           <IconButton onClick={onChats} title="Chats">
@@ -105,7 +111,7 @@ export default function MainScreen({
         variants={pageVariants}
         initial="hidden"
         animate="show"
-        className="flex-1 px-5 py-6 max-w-2xl mx-auto w-full"
+        className="mx-auto w-full max-w-[min(42rem,100vw)] flex-1 px-[clamp(0.875rem,4vw,1.25rem)] py-[clamp(1rem,3vw,1.5rem)]"
       >
         <SectionHeader title="Your Study Groups" actionLabel="See all" />
         <motion.div variants={listVariants} initial="hidden" animate="show">
@@ -131,7 +137,7 @@ export default function MainScreen({
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="h-px bg-[#ddd8cc] my-7 origin-left"
+          className="my-7 h-px origin-left bg-[#ddd8cc]"
         />
 
         <SectionHeader title="Open Study Groups" />
@@ -164,7 +170,40 @@ export default function MainScreen({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
               >
-                <EmptyState>No study groups match your search.</EmptyState>
+                <EmptyState>No public study groups match your search.</EmptyState>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+
+        <motion.div
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="my-7 h-px origin-left bg-[#ddd8cc]"
+        />
+
+        <SectionHeader title="Private Study Groups" />
+        <motion.div layout variants={listVariants} initial="hidden" animate="show">
+          <AnimatePresence mode="popLayout">
+            {filteredPrivateGroups.length > 0 ? (
+              filteredPrivateGroups.map((group) => (
+                <GroupCard
+                  key={group.id}
+                  group={group}
+                  joined={false}
+                  onDetail={onDetail}
+                  onAskToJoin={() => onAskToJoin(group.id)}
+                />
+              ))
+            ) : (
+              <motion.div
+                key="no-private-results"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+              >
+                <EmptyState>No private groups match your search.</EmptyState>
               </motion.div>
             )}
           </AnimatePresence>

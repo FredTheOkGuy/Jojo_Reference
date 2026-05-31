@@ -22,7 +22,7 @@ export default function ChatsScreen({
   const myGroups = groups.filter((g) => g.joined);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f2ede3]">
+    <div className="flex min-h-[100dvh] w-full flex-col overflow-x-hidden bg-[#f2ede3]">
       <TopBar
         title="Messages"
         left={<BackButton onClick={onBack} label="" />}
@@ -35,7 +35,7 @@ export default function ChatsScreen({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease: "easeOut" }}
-        className="flex-1 px-5 py-5 max-w-2xl mx-auto w-full"
+        className="mx-auto w-full max-w-[min(42rem,100vw)] flex-1 px-[clamp(0.875rem,4vw,1.25rem)] py-5"
       >
         {myGroups.length > 0 ? (
           <motion.div

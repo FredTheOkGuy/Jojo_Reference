@@ -8,7 +8,7 @@ interface MessageItemProps {
 export function MessageItem({ message }: MessageItemProps) {
   return (
     <div
-      className={`flex gap-2.5 max-w-[82%] ${message.mine ? "self-end flex-row-reverse" : ""}`}
+      className={`flex max-w-[92%] gap-2.5 sm:max-w-[82%] ${message.mine ? "self-end flex-row-reverse" : ""}`}
     >
       <div
         className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
@@ -48,7 +48,7 @@ interface MessageListProps {
 
 export function MessageList({ messages, scrollRef }: MessageListProps) {
   return (
-    <div className="flex-1 max-w-2xl mx-auto px-5 py-5 w-full flex flex-col gap-2 overflow-y-auto">
+    <div className="mx-auto flex min-h-0 w-full max-w-[min(42rem,100vw)] flex-1 flex-col gap-2 overflow-y-auto px-[clamp(0.875rem,4vw,1.25rem)] py-5">
       {messages.map((msg, idx) => (
         <MessageItem key={idx} message={msg} />
       ))}

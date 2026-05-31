@@ -6,6 +6,7 @@ import ChatsScreen from "../features/chat/ChatsScreen";
 import DetailScreen from "../features/study_groups/DetailScreen";
 import ChatScreen from "../features/chat/ChatScreen";
 import ProfileScreen from "../features/profile/ProfileScreen";
+import AskToJoinModal from "../components/AskToJoinModal";
 import { logout } from "../services/firebase/auth";
 
 import type { CreateGroupPayload, StudyGroup } from "./types";
@@ -29,6 +30,7 @@ export default function StudyHubApp() {
   const [filterCourseName, setFilterCourseName] = useState("");
 
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
+  const [requestGroupId, setRequestGroupId] = useState<number | null>(null);
   const [detailFrom, setDetailFrom] = useState<"main" | "chats">("main");
   const [chatFrom, setChatFrom] = useState<"detail" | "chats">("detail");
 
@@ -154,6 +156,24 @@ export default function StudyHubApp() {
     setGroups([...groups, newGroup]);
   };
 
+
+  const requestGroup =
+    requestGroupId === null
+      ? undefined
+      : groups.find((g) => g.id === requestGroupId);
+
+  const handleConfirmJoinRequest = () => {
+    if (requestGroupId === null) return;
+
+    setGroups((currentGroups) =>
+      currentGroups.map((g) =>
+        g.id === requestGroupId ? { ...g, joinRequested: true } : g,
+      ),
+    );
+    setRequestGroupId(null);
+  };
+
+
   const handleSignOut = async () => {
     try {
       await logout();
@@ -198,7 +218,12 @@ export default function StudyHubApp() {
   if (screen === "main") {
     return (
       <>
-        {requestModal}
+        <AskToJoinModal
+          open={requestGroupId !== null}
+          group={requestGroup}
+          onClose={() => setRequestGroupId(null)}
+          onConfirm={handleConfirmJoinRequest}
+        />
         <MainScreen
           groups={groups}
           filterSchool={filterSchool}

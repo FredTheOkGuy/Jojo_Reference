@@ -31,7 +31,7 @@ export default function ChatScreen({
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f2ede3]">
+    <div className="flex h-[100dvh] w-full flex-col overflow-hidden bg-[#f2ede3]">
       <TopBar
         title=""
         left={<BackButton onClick={onBack} label="" />}
@@ -39,12 +39,12 @@ export default function ChatScreen({
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-left"
+            className="min-w-0 text-left"
           >
-            <div className="font-bold text-base text-[#1a1610] font-['Syne']">
+            <div className="max-w-[52vw] overflow-hidden text-ellipsis whitespace-nowrap font-['Syne'] text-base font-bold text-[#1a1610] sm:max-w-none">
               {group.name}
             </div>
-            <div className="text-xs text-[#9a9282] font-medium">
+            <div className="max-w-[52vw] overflow-hidden text-ellipsis whitespace-nowrap text-xs font-medium text-[#9a9282] sm:max-w-none">
               {group.course} · {group.cur} members
             </div>
           </motion.div>
@@ -56,7 +56,7 @@ export default function ChatScreen({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: "easeOut" }}
-        className="flex-1 flex flex-col"
+        className="flex min-h-0 flex-1 flex-col"
       >
         <MessageList messages={group.messages} scrollRef={messagesEndRef} />
       </motion.div>
@@ -65,7 +65,7 @@ export default function ChatScreen({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.28, ease: "easeOut" }}
-        className="bg-[#faf8f4] border-t border-[#ddd8cc] px-5 py-3.5 flex gap-2.5 items-center"
+        className="flex items-center gap-2.5 border-t border-[#ddd8cc] bg-[#faf8f4] px-[clamp(0.875rem,4vw,1.25rem)] py-3.5"
       >
         <motion.input
           whileFocus={{ scale: 1.01 }}

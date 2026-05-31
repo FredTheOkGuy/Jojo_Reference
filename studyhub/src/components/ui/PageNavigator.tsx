@@ -4,24 +4,17 @@ interface PageNavigatorProps {
 
 export default function PageNavigator({ items }: PageNavigatorProps) {
   return (
-    <div className="w-full bg-[#f2ede3] border-b border-[#ddd8cc]">
-      <div className="max-w-2xl mx-auto px-5 py-2.5 flex items-center gap-2 text-xs font-bold text-[#9a9282]">
+    <nav className="w-full border-b border-[#e6e0d5]/70 bg-[#f2ede3]/80">
+      <div className="mx-auto flex w-full max-w-[min(42rem,100vw)] items-center gap-2 overflow-x-auto px-[clamp(0.875rem,4vw,1.25rem)] py-2.5 text-xs font-bold text-[#9a9282]">
         {items.map((item, index) => (
-          <div key={`${item}-${index}`} className="flex items-center gap-2">
-            <span
-              className={
-                index === items.length - 1 ? "text-[#c96332]" : "text-[#9a9282]"
-              }
-            >
+          <div key={`${item}-${index}`} className="flex shrink-0 items-center gap-2">
+            <span className={index === items.length - 1 ? "max-w-[12rem] truncate text-[#c96332]" : "max-w-[10rem] truncate"}>
               {item}
             </span>
-
-            {index < items.length - 1 && (
-              <span className="text-[#cec8bc]">/</span>
-            )}
+            {index < items.length - 1 && <span>/</span>}
           </div>
         ))}
       </div>
-    </div>
+    </nav>
   );
 }

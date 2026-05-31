@@ -17,14 +17,14 @@ export default function AskToJoinModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(26,22,16,.5)] backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(26,22,16,.5)] px-3 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="ask-to-join-title"
-        className="w-[22rem] max-w-[94vw] rounded-[24px] border border-[#ddd8cc] bg-[#faf8f4] p-6 shadow-xl"
+        className="w-full max-w-[min(22rem,94vw)] rounded-[24px] border border-[#ddd8cc] bg-[#faf8f4] p-5 shadow-xl sm:p-6"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="mb-4">

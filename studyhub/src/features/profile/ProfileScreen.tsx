@@ -15,7 +15,7 @@ export default function ProfileScreen({ groups, onBack, onSignOut }: ProfileScre
   const joinedCount = groups.filter((g) => g.joined).length;
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f2ede3]">
+    <div className="flex min-h-[100dvh] w-full flex-col overflow-x-hidden bg-[#f2ede3]">
       <TopBar title="" left={<BackButton onClick={onBack} />} />
 
       <PageNavigator items={["StudyHub", "Profile"]} />
@@ -67,7 +67,7 @@ export default function ProfileScreen({ groups, onBack, onSignOut }: ProfileScre
         initial="hidden"
         animate="show"
         variants={{ show: { transition: { staggerChildren: 0.06 } } }}
-        className="max-w-md mx-auto px-5 py-6 w-full"
+        className="mx-auto w-full max-w-[min(28rem,100vw)] px-[clamp(0.875rem,4vw,1.25rem)] py-6"
       >
         <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} whileHover={{ x: 3 }}>
           <ProfileItem icon="✏️" label="Edit Profile" />

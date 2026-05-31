@@ -80,7 +80,7 @@ export default function CreateGroupModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.18 }}
-          className="fixed inset-0 bg-[rgba(26,22,16,.5)] z-50 flex items-center justify-center backdrop-blur-sm px-3"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(26,22,16,.5)] px-3 backdrop-blur-sm"
           onClick={onClose}
         >
           <style>
@@ -117,11 +117,11 @@ export default function CreateGroupModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 18, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 280, damping: 24 }}
-            className="bg-[#faf8f4] border border-[#ddd8cc] rounded-[28px] w-96 max-w-[94vw] shadow-2xl overflow-hidden"
+            className="w-full max-w-[min(28rem,94vw)] overflow-hidden rounded-[28px] border border-[#ddd8cc] bg-[#faf8f4] shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="max-h-[92vh] overflow-y-auto studyhub-modal-scroll">
-              <div className="p-7 pr-5">
+            <div className="studyhub-modal-scroll max-h-[92dvh] overflow-y-auto">
+              <div className="p-[clamp(1.125rem,5vw,1.75rem)] pr-[clamp(1rem,4vw,1.25rem)]">
                 <div className="flex items-start justify-between gap-4 mb-6">
                   <span className="font-black text-2xl text-[#1a1610] font-['Syne'] leading-tight">
                     Create Study Group
@@ -161,7 +161,7 @@ export default function CreateGroupModal({
 
                   <motion.div
                     variants={fieldVariant}
-                    className="flex gap-2.5 mb-4"
+                    className="mb-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2"
                   >
                     <div className="flex-1">
                       <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
@@ -218,7 +218,7 @@ export default function CreateGroupModal({
 
                   <motion.div
                     variants={fieldVariant}
-                    className="flex gap-2.5 mb-4"
+                    className="mb-4 grid grid-cols-1 gap-2.5 sm:grid-cols-2"
                   >
                     <div className="flex-1">
                       <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
@@ -249,7 +249,7 @@ export default function CreateGroupModal({
 
                   <motion.div
                     variants={fieldVariant}
-                    className="flex gap-2.5 mb-5"
+                    className="mb-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2"
                   >
                     <div className="flex-1">
                       <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
