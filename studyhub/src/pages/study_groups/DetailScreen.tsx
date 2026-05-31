@@ -1,4 +1,9 @@
-import type { StudyGroup, Member, DocumentType } from "../../app/StudyHubApp";
+import type { StudyGroup } from "../../app/StudyHubApp";
+import TopBar from "../../components/ui/TopBar";
+import Button from "../../components/ui/Button";
+import { Card, InfoGrid } from "../../components/ui/Card";
+import { MembersList, DocumentsList } from "../../components/ui/ContentLists";
+import { GI_COLORS_MAP } from "../../data/mockData";
 
 interface DetailScreenProps {
   group: StudyGroup;
@@ -6,14 +11,6 @@ interface DetailScreenProps {
   onChat: () => void;
   onLeave: () => void;
 }
-
-const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
-  "gi-orange": { bg: "#faeade", text: "#c96332" },
-  "gi-green": { bg: "#e8edda", text: "#5a6e3a" },
-  "gi-blue": { bg: "#dde6f5", text: "#3d5fa0" },
-  "gi-purple": { bg: "#ede0f7", text: "#7a4fa0" },
-  "gi-gold": { bg: "#f7edcc", text: "#8a6a1e" },
-};
 
 export default function DetailScreen({
   group,
@@ -28,20 +25,12 @@ export default function DetailScreen({
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f2ede3]">
-      {/* Topbar */}
-      <div className="h-14 bg-[#faf8f4] border-b border-[#ddd8cc] flex items-center px-5 sticky top-0 z-50 gap-3">
-        <button
-          onClick={onBack}
-          className="text-sm text-[#4a4438] font-bold hover:text-[#c96332]"
-        >
-          ← Back
-        </button>
-      </div>
+      <TopBar showBackButton onBackClick={onBack} />
 
       {/* Content */}
       <div className="flex-1 max-w-2xl mx-auto w-full px-5 py-7">
         {/* Hero Section */}
-        <div className="bg-[#faf8f4] border border-[#ddd8cc] rounded-3xl p-6 mb-4">
+        <Card className="mb-4">
           <div className="flex gap-4 mb-4">
             <div
               className="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-xl flex-shrink-0"
@@ -60,44 +49,54 @@ export default function DetailScreen({
             {group.desc}
           </p>
           <div className="flex gap-3">
-            <button
-              onClick={onChat}
-              className="flex-1 py-3 bg-[#c96332] text-white font-bold rounded-lg hover:bg-[#a34e24]"
-            >
-              Chat
-            </button>
-            <button
-              onClick={onLeave}
-              className="flex-1 py-3 bg-[#edeae2] text-red-600 font-bold rounded-lg border-2 border-red-200 hover:bg-red-50"
-            >
-              Leave
-            </button>
+            <Button label="Chat" onClick={onChat} variant="primary" fullWidth />
+            <Button label="Leave" onClick={onLeave} variant="danger" fullWidth />
           </div>
-        </div>
+        </Card>
 
         {/* Info Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-[#faf8f4] border border-[#ddd8cc] rounded-lg p-4">
-            <div className="text-xs font-bold uppercase tracking-wider text-[#9a9282] mb-2">
-              Location
-            </div>
-            <div className="text-sm font-bold text-[#1a1610]">{group.location}</div>
-          </div>
-          <div className="bg-[#faf8f4] border border-[#ddd8cc] rounded-lg p-4">
-            <div className="text-xs font-bold uppercase tracking-wider text-[#9a9282] mb-2">
-              Schedule
-            </div>
-            <div className="text-sm font-bold text-[#1a1610]">
-              {group.days}
-              <br />
-              {group.time}
-            </div>
-          </div>
-          <div className="bg-[#faf8f4] border border-[#ddd8cc] rounded-lg p-4">
-            <div className="text-xs font-bold uppercase tracking-wider text-[#9a9282] mb-2">
-              Members
-            </div>
-            <div className="text-sm font-bold text-[#1a1610]">
+        <InfoGrid
+          items={[
+            { label: "Location", value: group.location },
+            { label: "Schedule", value: `${group.days}\n${group.time}` },
+            { label: "Members", value: `${group.cur} / ${group.max}` },
+            {
+              label: "Capacity",
+              value: (
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-2 bg-[#e4e0d6] rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${capacityClass}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="text-xs">{pct}%</span>
+                </div>
+              ),
+            },
+          ]}
+          columns={2}
+        />
+
+        {/* Members Section */}
+        <div className="mt-6">
+          <h2 className="text-sm font-bold text-[#4a4438] uppercase tracking-wider mb-3">
+            Members
+          </h2>
+          <MembersList members={group.members} />
+        </div>
+
+        {/* Documents Section */}
+        <div className="mt-6">
+          <h2 className="text-sm font-bold text-[#4a4438] uppercase tracking-wider mb-3">
+            Documents
+          </h2>
+          <DocumentsList documents={group.docs} />
+        </div>
+      </div>
+    </div>
+  );
+}
               {group.cur} / {group.max}
             </div>
             <div className="w-full h-1 bg-[#e4e0d6] rounded-full mt-2 overflow-hidden">

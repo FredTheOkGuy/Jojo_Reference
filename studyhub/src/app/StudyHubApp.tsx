@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { INITIAL_GROUPS } from "../data/mockData";
 import LoginScreen from "../pages/auth/LoginScreen";
 import MainScreen from "../pages/study_groups/MainScreen";
 import ChatsScreen from "../features/chat/ChatsScreen";
@@ -6,27 +7,33 @@ import DetailScreen from "../pages/study_groups/DetailScreen";
 import ChatScreen from "../features/chat/ChatScreen";
 import ProfileScreen from "../features/profile/ProfileScreen";
 
+// ============================================
+// TYPE DEFINITIONS
+// These define the structure of your data
+// Replace the mockData file with real API/database calls
+// ============================================
+
 export interface Member {
-  i: string;
-  n: string;
-  r: string;
-  owner: boolean;
-  c: string;
+  i: string; // Initials
+  n: string; // Full name
+  r: string; // Role (Host, Member, etc.)
+  owner: boolean; // Is owner
+  c: string; // Color code
 }
 
 export interface DocumentType {
-  n: string;
-  t: "pdf" | "docx" | "pptx";
-  s: string;
+  n: string; // File name
+  t: "pdf" | "docx" | "pptx"; // File type
+  s: string; // File size
 }
 
 export interface Message {
-  sender: string;
-  senderFull: string;
-  mine: boolean;
-  c: string;
-  text: string;
-  time: string;
+  sender: string; // Short name for avatar
+  senderFull: string; // Full name
+  mine: boolean; // Is current user's message
+  c: string; // Color
+  text: string; // Message content
+  time: string; // Timestamp
 }
 
 export interface StudyGroup {
@@ -34,9 +41,9 @@ export interface StudyGroup {
   name: string;
   course: string;
   icon: string;
-  gi: string;
-  cur: number;
-  max: number;
+  gi: string; // Group icon color theme
+  cur: number; // Current members
+  max: number; // Max capacity
   joined: boolean;
   location: string;
   days: string;
@@ -50,89 +57,6 @@ export interface StudyGroup {
   filterCode?: string;
   filterNum?: string;
 }
-
-const INITIAL_GROUPS: StudyGroup[] = [
-  {
-    id: 0,
-    name: "Algorithm Masters",
-    course: "COMP 352",
-    icon: "AL",
-    gi: "gi-orange",
-    cur: 7,
-    max: 10,
-    joined: true,
-    location: "Hall Building H-521",
-    days: "Tuesday & Thursday",
-    time: "5:00 PM – 7:00 PM",
-    desc: "Working through algorithm design, complexity analysis, and exam prep.",
-    badgeBg: "#faeade",
-    badgeColor: "#c96332",
-    members: [
-      { i: "AJ", n: "Alice Johnson", r: "Host", owner: true, c: "#c96332" },
-      { i: "MB", n: "Marcus Brown", r: "Member", owner: false, c: "#5a6e3a" },
-    ],
-    docs: [
-      { n: "Algo_Notes.pdf", t: "pdf", s: "2.4 MB" },
-      { n: "Practice_Set.docx", t: "docx", s: "1.2 MB" },
-    ],
-    messages: [
-      {
-        sender: "AJ",
-        senderFull: "Alice",
-        mine: true,
-        c: "#c96332",
-        text: "Hey, ready for the test?",
-        time: "2:45 PM",
-      },
-      {
-        sender: "MB",
-        senderFull: "Marcus",
-        mine: false,
-        c: "#5a6e3a",
-        text: "Almost there! Need to review recursion",
-        time: "2:48 PM",
-      },
-    ],
-  },
-  {
-    id: 1,
-    name: "Calculus Crew",
-    course: "MATH 203",
-    icon: "CA",
-    gi: "gi-green",
-    cur: 5,
-    max: 8,
-    joined: false,
-    location: "Library LB 320",
-    days: "Monday & Wednesday",
-    time: "4:00 PM – 5:30 PM",
-    desc: "Integration techniques and calculus problem solving.",
-    badgeBg: "#e8edda",
-    badgeColor: "#5a6e3a",
-    members: [],
-    docs: [],
-    messages: [],
-  },
-  {
-    id: 2,
-    name: "Digital Systems Study",
-    course: "COEN 244",
-    icon: "DS",
-    gi: "gi-purple",
-    cur: 6,
-    max: 10,
-    joined: false,
-    location: "EV 1.210",
-    days: "Friday",
-    time: "6:00 PM – 8:00 PM",
-    desc: "Digital circuits, logic gates, and Verilog simulations.",
-    badgeBg: "#ede0f7",
-    badgeColor: "#7a4fa0",
-    members: [],
-    docs: [],
-    messages: [],
-  },
-];
 
 type Screen = "login" | "main" | "chats" | "detail" | "chat" | "profile";
 

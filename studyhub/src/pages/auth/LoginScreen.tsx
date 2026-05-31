@@ -1,8 +1,20 @@
+import Button from "../../components/ui/Button";
+
 interface LoginScreenProps {
   onSignIn: () => void;
+  appName?: string;
+  appTagline?: string;
+  emailPlaceholder?: string;
+  passwordPlaceholder?: string;
 }
 
-export default function LoginScreen({ onSignIn }: LoginScreenProps) {
+export default function LoginScreen({
+  onSignIn,
+  appName = "StudyHub",
+  appTagline = "Your campus study network",
+  emailPlaceholder = "you@concordia.ca",
+  passwordPlaceholder = "••••••••",
+}: LoginScreenProps) {
   return (
     <section className="flex items-center justify-center min-h-screen bg-[#f2ede3] relative overflow-hidden">
       {/* Blobs */}
@@ -14,11 +26,9 @@ export default function LoginScreen({ onSignIn }: LoginScreenProps) {
       {/* Login Card */}
       <div className="relative z-10 w-96 bg-[#faf8f4] border border-[#ddd8cc] rounded-5xl p-11 shadow-xl">
         <div className="font-black text-4xl text-[#c96332] font-['Syne'] -tracking-0.5px mb-0.5">
-          StudyHub
+          {appName}
         </div>
-        <p className="text-sm text-[#9a9282] font-medium mb-8">
-          Your campus study network
-        </p>
+        <p className="text-sm text-[#9a9282] font-medium mb-8">{appTagline}</p>
 
         {/* Email Field */}
         <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
@@ -26,7 +36,7 @@ export default function LoginScreen({ onSignIn }: LoginScreenProps) {
         </label>
         <input
           type="email"
-          placeholder="you@concordia.ca"
+          placeholder={emailPlaceholder}
           className="w-full px-4 py-3 mb-4 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
         />
 
@@ -36,17 +46,19 @@ export default function LoginScreen({ onSignIn }: LoginScreenProps) {
         </label>
         <input
           type="password"
-          placeholder="••••••••"
+          placeholder={passwordPlaceholder}
           className="w-full px-4 py-3 mb-4 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
         />
 
         {/* Sign In Button */}
-        <button
+        <Button
+          label="Sign in →"
           onClick={onSignIn}
-          className="w-full py-3.5 bg-[#c96332] text-white font-bold rounded-[9px] transition-all hover:bg-[#a34e24] active:scale-95 hover:shadow-lg"
-        >
-          Sign in →
-        </button>
+          variant="primary"
+          size="lg"
+          fullWidth
+          className="mb-5"
+        />
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-5">
@@ -56,12 +68,17 @@ export default function LoginScreen({ onSignIn }: LoginScreenProps) {
         </div>
 
         {/* Google Button */}
-        <button className="w-full py-3 bg-[#faf8f4] text-[#4a4438] font-semibold text-sm border-2 border-[#ddd8cc] rounded-[9px] transition-all hover:border-[#c96332] hover:text-[#c96332]">
-          Continue with Google
-        </button>
+        <Button
+          label="Continue with Google"
+          onClick={() => {}}
+          variant="secondary"
+          size="md"
+          fullWidth
+          className="mb-6"
+        />
 
         {/* Footer */}
-        <p className="mt-6 text-center text-sm text-[#9a9282] font-medium">
+        <p className="text-center text-sm text-[#9a9282] font-medium">
           No account?{" "}
           <button
             onClick={onSignIn}
