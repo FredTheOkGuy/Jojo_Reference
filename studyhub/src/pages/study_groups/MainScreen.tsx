@@ -13,10 +13,13 @@ import PageNavigator from "../../components/ui/PageNavigator";
 
 interface MainScreenProps {
   groups: StudyGroup[];
-  filterCode: string;
+  filterSchool: string;
   filterNum: string;
-  onFilterCodeChange: (code: string) => void;
+  filterCourseName: string;
+  onFilterSchoolChange: (school: string) => void;
   onFilterNumChange: (num: string) => void;
+  onFilterCourseNameChange: (name: string) => void;
+  onClearFilters: () => void;
   onDetail: (id: number) => void;
   onChats: () => void;
   onProfile: () => void;
@@ -27,10 +30,13 @@ interface MainScreenProps {
 
 export default function MainScreen({
   groups,
-  filterCode,
+  filterSchool,
   filterNum,
-  onFilterCodeChange,
+  filterCourseName,
+  onFilterSchoolChange,
   onFilterNumChange,
+  onFilterCourseNameChange,
+  onClearFilters,
   onDetail,
   onChats,
   onProfile,
@@ -43,11 +49,26 @@ export default function MainScreen({
   const openGroups = groups.filter((g) => !g.joined && !g.isPrivate);
   const privateGroups = groups.filter((g) => !g.joined && g.isPrivate);
 
-  const filteredOpenGroups = openGroups.filter((g) => {
-    const codeMatch = !filterCode || g.filterCode === filterCode;
-    const numMatch = !filterNum || g.filterNum === filterNum;
-    return codeMatch && numMatch;
-  });
+  const normalize = (value?: string) => value?.toLowerCase().trim() ?? "";
+
+  const getSchoolSearchText = (group: StudyGroup) =>
+    [
+      group.schoolName,
+      group.mapLocation,
+      group.location,
+      ...group.members.map((member) => member.r),
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+  const filteredOpenGroups = openGroups.filter((group) => {
+    const schoolQuery = normalize(filterSchool);
+    const numberQuery = normalize(filterNum);
+    const courseNameQuery = normalize(filterCourseName);
+
+    const schoolMatch =
+      !schoolQuery ||
+      normalize(getSchoolSearchText(group)).includes(schoolQuery);
 
   const courseCodes = [
     ...new Set(groups.map((g) => g.filterCode).filter(Boolean)),
@@ -55,6 +76,18 @@ export default function MainScreen({
   const courseNumbers = [
     ...new Set(groups.map((g) => g.filterNum).filter(Boolean)),
   ] as string[];
+    const numberMatch =
+      !numberQuery ||
+      normalize(group.filterNum || group.course).includes(numberQuery);
+
+    const courseNameMatch =
+      !courseNameQuery ||
+      normalize(`${group.name} ${group.course} ${group.desc}`).includes(
+        courseNameQuery,
+      );
+
+    return schoolMatch && numberMatch && courseNameMatch;
+  });
 
   const filteredPrivateGroups = privateGroups.filter((g) => {
     const codeMatch = !filterCode || g.filterCode === filterCode;
@@ -94,12 +127,13 @@ export default function MainScreen({
 
         <SectionHeader title="Open Study Groups" />
         <FilterBar
-          filterCode={filterCode}
+          filterSchool={filterSchool}
           filterNum={filterNum}
-          courseCodes={courseCodes}
-          courseNumbers={courseNumbers}
-          onFilterCodeChange={onFilterCodeChange}
+          filterCourseName={filterCourseName}
+          onFilterSchoolChange={onFilterSchoolChange}
           onFilterNumChange={onFilterNumChange}
+          onFilterCourseNameChange={onFilterCourseNameChange}
+          onClearFilters={onClearFilters}
           onCreate={() => setShowCreateModal(true)}
         />
 
@@ -113,7 +147,7 @@ export default function MainScreen({
             />
           ))
         ) : (
-          <EmptyState>No open groups at the moment.</EmptyState>
+          <EmptyState>No study groups match your search.</EmptyState>
         )}
 
         <div className="h-px bg-[#ddd8cc] my-7" />
