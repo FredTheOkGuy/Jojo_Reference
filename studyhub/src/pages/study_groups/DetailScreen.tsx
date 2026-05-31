@@ -1,14 +1,14 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { doc, getDoc, collection, getDocs, onSnapshot, query, orderBy } from "firebase/firestore";
-import { db } from "@/services/firebase/firebase";
-import { useAuth } from "@/hooks/useAuth";
-import { leaveStudyGroup, uploadDocument, listenToMessages, joinStudyGroup } from "@/queries/study_group";
 import Button from "@/components/ui/Button";
-import TopBar, { BackButton } from "@/components/ui/TopBar";
 import { CapacityMeter, Card, InfoBox } from "@/components/ui/Card";
 import { DocumentsList, ListPanel, MembersList } from "@/components/ui/ContentLists";
 import PageNavigator from "@/components/ui/PageNavigator";
+import TopBar, { BackButton } from "@/components/ui/TopBar";
+import { useAuth } from "@/hooks/useAuth";
+import { deleteStudyGroup, leaveStudyGroup, joinStudyGroup } from "@/queries/study_group";
+import { db } from "@/services/firebase/firebase";
+import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const GI_COLORS = [
   { bg: "#faeade", text: "#c96332" },
@@ -62,7 +62,10 @@ export default function DetailScreen() {
     if (!user || !groupId) return;
     try {
       const studentName = user.displayName ?? user.email ?? user.uid;
-      await leaveStudyGroup(groupId, studentName);
+      await leaveStudyGroup(groupId, studentName, user.uid);
+      if (group.creatorName === studentName) {
+        deleteStudyGroup(groupId);
+      }
       navigate("/app");
     } catch (e) {
       console.error(e);

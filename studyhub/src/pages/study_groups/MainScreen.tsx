@@ -22,7 +22,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface MainScreenProps {
   filterCode: string;
@@ -86,6 +86,16 @@ export default function MainScreen({
 
     setDisplayGroups(filtered);
   }, [searchCode, searchNum, openGroups]);
+
+  useEffect(() => {
+  const onFocus = () => {
+    if (user) reloadGroups(user.uid);
+  };
+
+  window.addEventListener("focus", onFocus);
+
+  return () => window.removeEventListener("focus", onFocus);
+}, [user]);
 
   async function reloadGroups(uid: string, cancelled = false) {
     const joinedGroups = await getMyGroups(uid);

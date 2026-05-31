@@ -61,10 +61,15 @@ export async function joinStudyGroup(groupId: string, studentName: string) {
   });
 }
 
-export async function leaveStudyGroup(groupId: string, studentName: string) {
-  await updateDoc(doc(db, "study_groups", groupId), {
-    members: arrayRemove(studentName),
-  });
+export async function leaveStudyGroup(groupId: string, studentName: string, userId: string) {
+  await Promise.all([
+    updateDoc(doc(db, "study_groups", groupId), {
+      members: arrayRemove(studentName),
+    }),
+    updateDoc(doc(db, "users", userId), {
+      groupIds: arrayRemove(groupId),
+    }),
+  ]);
 }
 
 export async function deleteStudyGroup(groupId: string) {
