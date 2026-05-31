@@ -6,6 +6,7 @@ interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   className?: string;
+  loading?: boolean;
 }
 
 export default function Button({
@@ -16,6 +17,7 @@ export default function Button({
   disabled = false,
   fullWidth = false,
   className = "",
+  loading = false,
 }: ButtonProps) {
   const baseClass =
     "font-bold rounded-[9px] transition-all cursor-pointer border-none";
@@ -36,15 +38,22 @@ export default function Button({
   };
 
   const widthClass = fullWidth ? "w-full" : "";
-  const disabledClass = disabled ? "opacity-50 cursor-not-allowed" : "";
+  const disabledClass = (disabled || loading) ? "opacity-50 cursor-not-allowed" : "";
 
   return (
     <button
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       className={`${baseClass} ${variantClass[variant]} ${sizeClass[size]} ${widthClass} ${disabledClass} ${className}`}
     >
-      {label}
+      {loading ? (
+          <div className="flex items-center justify-center w-full">
+            <div className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin">
+            </div>
+          </div>
+      ) : (
+        label
+      )}
     </button>
   );
 }

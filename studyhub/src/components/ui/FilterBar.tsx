@@ -1,3 +1,5 @@
+import { Plus } from "lucide-react";
+
 interface FilterBarProps {
   filterCode: string;
   filterNum: string;
@@ -34,10 +36,10 @@ export default function FilterBar({
       <button
         type="button"
         onClick={onCreate}
-        className="ml-auto w-9 h-9 rounded-[9px] bg-[#c96332] text-white text-2xl font-black cursor-pointer flex items-center justify-center transition-all hover:bg-[#a34e24] hover:scale-105 hover:shadow-lg flex-shrink-0"
+        className="ml-auto w-9 h-9 rounded-[9px] bg-[#c96332] text-white flex items-center justify-center transition-all hover:bg-[#a34e24] hover:scale-105 hover:shadow-lg flex-shrink-0"
         title="Create group"
       >
-        +
+        <Plus size={20} />
       </button>
     </div>
   );

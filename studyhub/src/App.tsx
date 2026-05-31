@@ -1,9 +1,7 @@
-import { Suspense, lazy, Component, useState } from "react";
+import { Suspense, Component } from "react";
 import type { ReactNode } from "react";
 import './App.css'
-
-
-const StudyHubApp = lazy(() => import("./app/StudyHubApp"));
+import AppRoutes from "./routes/AppRoutes";
 
 class ErrorBoundary extends Component<
   { children: ReactNode },
@@ -45,7 +43,7 @@ export default function App() {
           </div>
         }
       >
-        <StudyHubApp />
+        <AppRoutes />
       </Suspense>
     </ErrorBoundary>
   );

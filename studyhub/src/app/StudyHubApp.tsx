@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CURRENT_USER, INITIAL_GROUPS } from "../data/mockData";
-import LoginScreen from "../pages/auth/LoginScreen";
+import SignUpScreen from "../pages/auth/SignUpScreen";
 import MainScreen from "../pages/study_groups/MainScreen";
 import ChatsScreen from "../features/chat/ChatsScreen";
 import DetailScreen from "../pages/study_groups/DetailScreen";
@@ -8,14 +8,16 @@ import ChatScreen from "../features/chat/ChatScreen";
 import ProfileScreen from "../features/profile/ProfileScreen";
 import { logout } from "../services/firebase/auth";
 
-import type { CreateGroupPayload, StudyGroup } from "./types";
-export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup } from "./types";
+import type { CreateGroupPayload, StudyGroup_old } from "./types";
+import App from "@/App";
+import AppRoutes from "@/routes/AppRoutes";
+export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup_old as StudyGroup } from "./types";
 
 type Screen = "login" | "main" | "chats" | "detail" | "chat" | "profile";
 
 export default function StudyHubApp() {
   const [screen, setScreen] = useState<Screen>("login");
-  const [groups, setGroups] = useState<StudyGroup[]>(INITIAL_GROUPS);
+  const [groups, setGroups] = useState<StudyGroup_old[]>(INITIAL_GROUPS);
   const [filterCode, setFilterCode] = useState("");
   const [filterNum, setFilterNum] = useState("");
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
@@ -66,7 +68,7 @@ export default function StudyHubApp() {
   };
 
   const handleCreateGroup = (data: CreateGroupPayload) => {
-    const newGroup: StudyGroup = {
+    const newGroup: StudyGroup_old = {
       id: groups.length,
       name: data.name || "New Study Group",
       course: `${data.code || "MISC"} ${data.number || "000"}`,
@@ -139,7 +141,7 @@ export default function StudyHubApp() {
   };
 
   if (screen === "login") {
-    return <LoginScreen onSignIn={() => setScreen("main")} />;
+    return <SignUpScreen/>;
   }
 
   if (screen === "main") {

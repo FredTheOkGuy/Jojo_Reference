@@ -1,1 +1,1 @@
-export { default } from "../../pages/auth/LoginScreen";
+export { default } from "../../pages/auth/SignUpScreen";
