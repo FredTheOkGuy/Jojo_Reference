@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface CreateGroupModalProps {
   open: boolean;
@@ -8,15 +9,23 @@ interface CreateGroupModalProps {
     name: string;
     code: string;
     number: string;
-    isPrivate: boolean;
     location: string;
     mapLocation: string;
     day: string;
     startTime: string;
     endTime: string;
     maxMembers: number;
+    isPrivate: boolean;
   }) => void;
 }
+
+const inputClass =
+  "w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]";
+
+const fieldVariant = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0 },
+};
 
 export default function CreateGroupModal({
   open,
@@ -63,203 +72,239 @@ export default function CreateGroupModal({
     setIsPrivate(false);
   };
 
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 bg-[rgba(26,22,16,.5)] z-50 flex items-center justify-center backdrop-blur-sm"
-      onClick={onClose}
-    >
-      <div
-        className="bg-[#faf8f4] border border-[#ddd8cc] rounded-5xl p-7 w-96 max-w-[94vw] shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between mb-6">
-          <span className="font-black text-2xl text-[#1a1610] font-['Syne']">
-            Create Study Group
-          </span>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.18 }}
+          className="fixed inset-0 bg-[rgba(26,22,16,.5)] z-50 flex items-center justify-center backdrop-blur-sm px-3"
+          onClick={onClose}
+        >
+          <style>
+            {`
+              .studyhub-modal-scroll {
+                scrollbar-width: thin;
+                scrollbar-color: #c96332 #edeae2;
+              }
 
-          <button
-            onClick={onClose}
-            className="w-7 h-7 rounded-lg bg-[#edeae2] border border-[#ddd8cc] text-[#4a4438] cursor-pointer text-sm font-bold flex items-center justify-center transition-all hover:bg-[#faeade] hover:text-[#c96332]"
+              .studyhub-modal-scroll::-webkit-scrollbar {
+                width: 8px;
+              }
+
+              .studyhub-modal-scroll::-webkit-scrollbar-track {
+                background: #edeae2;
+                border-radius: 999px;
+                margin: 10px 0;
+              }
+
+              .studyhub-modal-scroll::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, #d97945, #c96332);
+                border-radius: 999px;
+                border: 2px solid #edeae2;
+              }
+
+              .studyhub-modal-scroll::-webkit-scrollbar-thumb:hover {
+                background: #a34e24;
+              }
+            `}
+          </style>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24, scale: 0.94 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 18, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 280, damping: 24 }}
+            className="bg-[#faf8f4] border border-[#ddd8cc] rounded-[28px] w-96 max-w-[94vw] shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
           >
-            ✕
-          </button>
-        </div>
+            <div className="max-h-[92vh] overflow-y-auto studyhub-modal-scroll">
+              <div className="p-7 pr-5">
+                <div className="flex items-start justify-between gap-4 mb-6">
+                  <span className="font-black text-2xl text-[#1a1610] font-['Syne'] leading-tight">
+                    Create Study Group
+                  </span>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-              Group Name
-            </label>
+                  <motion.button
+                    type="button"
+                    onClick={onClose}
+                    whileHover={{ rotate: 90, scale: 1.08 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-8 h-8 rounded-lg bg-[#edeae2] border border-[#ddd8cc] text-[#4a4438] cursor-pointer text-sm font-bold flex items-center justify-center transition-all hover:bg-[#faeade] hover:text-[#c96332] flex-shrink-0"
+                  >
+                    ✕
+                  </motion.button>
+                </div>
 
-            <input
-              type="text"
-              placeholder="e.g. Signals & Systems Team"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-            />
-          </div>
+                <motion.form
+                  onSubmit={handleSubmit}
+                  initial="hidden"
+                  animate="show"
+                  variants={{
+                    show: { transition: { staggerChildren: 0.045 } },
+                  }}
+                >
+                  <motion.div variants={fieldVariant} className="mb-4">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                      Group Name
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Signals & Systems Team"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className={inputClass}
+                    />
+                  </motion.div>
 
-          <div className="flex gap-2.5 mb-4">
-            <div className="flex-1">
-              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                Course Code
-              </label>
+                  <motion.div
+                    variants={fieldVariant}
+                    className="flex gap-2.5 mb-4"
+                  >
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                        Course Code
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="COEN"
+                        value={code}
+                        onChange={(e) => setCode(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
 
-              <input
-                type="text"
-                placeholder="COEN"
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-              />
-            </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                        Course Number
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="244"
+                        value={number}
+                        onChange={(e) => setNumber(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                  </motion.div>
 
-            <div className="flex-1">
-              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                Course Number
-              </label>
+                  <motion.div variants={fieldVariant} className="mb-4">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                      Room Location
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. H-561, LB 520, custom study room"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className={inputClass}
+                    />
+                  </motion.div>
 
-              <input
-                type="text"
-                placeholder="244"
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-              />
-            </div>
-          </div>
+                  <motion.div variants={fieldVariant} className="mb-4">
+                    <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                      Physical Map Location
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Concordia University Hall Building, Montreal, QC"
+                      value={mapLocation}
+                      onChange={(e) => setMapLocation(e.target.value)}
+                      className={inputClass}
+                    />
+                  </motion.div>
 
-          <div className="mb-4">
-            <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-              Room Location
-            </label>
+                  <motion.div
+                    variants={fieldVariant}
+                    className="flex gap-2.5 mb-4"
+                  >
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                        Date
+                      </label>
+                      <input
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
 
-            <input
-              type="text"
-              placeholder="e.g. H-561, LB 520, custom study room"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-            />
-          </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                        Max Members
+                      </label>
+                      <input
+                        type="number"
+                        min="2"
+                        max="30"
+                        value={maxMembers}
+                        onChange={(e) => setMaxMembers(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                  </motion.div>
 
-          <div className="mb-4">
-            <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-              Physical Map Location
-            </label>
+                  <motion.div
+                    variants={fieldVariant}
+                    className="flex gap-2.5 mb-5"
+                  >
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                        Start Time
+                      </label>
+                      <input
+                        type="time"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
 
-            <input
-              type="text"
-              placeholder="e.g. Concordia University Hall Building, Montreal, QC"
-              value={mapLocation}
-              onChange={(e) => setMapLocation(e.target.value)}
-              className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-            />
-          </div>
+                    <div className="flex-1">
+                      <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                        End Time
+                      </label>
+                      <input
+                        type="time"
+                        value={endTime}
+                        onChange={(e) => setEndTime(e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
+                  </motion.div>
 
-          <div className="flex gap-2.5 mb-4">
-            <div className="flex-1">
-              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                Date
-              </label>
+                  <motion.label
+                    variants={fieldVariant}
+                    className="flex items-center gap-3 mb-5 p-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isPrivate}
+                      onChange={(e) => setIsPrivate(e.target.checked)}
+                      className="accent-[#c96332]"
+                    />
+                    <span className="text-sm font-bold text-[#4a4438]">
+                      Private group
+                    </span>
+                  </motion.label>
 
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-              />
-            </div>
-
-            <div className="flex-1">
-              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                Max Members
-              </label>
-
-              <input
-                type="number"
-                min="2"
-                max="30"
-                value={maxMembers}
-                onChange={(e) => setMaxMembers(e.target.value)}
-                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-2.5 mb-5">
-            <div className="flex-1">
-              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                Start Time
-              </label>
-
-              <input
-                type="time"
-                value={startTime}
-                onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-              />
-            </div>
-
-            <div className="flex-1">
-              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                End Time
-              </label>
-
-              <input
-                type="time"
-                value={endTime}
-                onChange={(e) => setEndTime(e.target.value)}
-                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-              />
-            </div>
-          </div>
-
-          <div className="mb-5 rounded-[12px] border border-[#ddd8cc] bg-[#edeae2] px-4 py-3">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1">
-                  Group Privacy
-                </label>
-                <p className="text-xs text-[#9a9282] font-medium">
-                  Switch between a public group and a private group.
-                </p>
+                  <motion.button
+                    type="submit"
+                    whileHover={{ y: -2, scale: 1.01 }}
+                    whileTap={{ scale: 0.96 }}
+                    className="w-full py-3.5 bg-[#c96332] text-white font-bold rounded-[9px] transition-colors hover:bg-[#a34e24] hover:shadow-lg"
+                  >
+                    Create Group →
+                  </motion.button>
+                </motion.form>
               </div>
-
-              <button
-                type="button"
-                role="switch"
-                aria-checked={isPrivate}
-                onClick={() => setIsPrivate((current) => !current)}
-                className={`relative inline-flex h-8 w-16 items-center rounded-full border transition-all duration-200 ${
-                  isPrivate
-                    ? "border-[#c96332] bg-[#c96332]"
-                    : "border-[#cfc7b7] bg-[#d7d0c2]"
-                }`}
-              >
-                <span
-                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                    isPrivate ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
-                <span className="sr-only">
-                  {isPrivate ? "Private group" : "Public group"}
-                </span>
-              </button>
             </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full py-3.5 bg-[#c96332] text-white font-bold rounded-[9px] transition-all hover:bg-[#a34e24] active:scale-95 hover:shadow-lg"
-          >
-            Create Group →
-          </button>
-        </form>
-      </div>
-    </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

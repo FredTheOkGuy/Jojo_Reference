@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 interface FilterBarProps {
   filterSchool: string;
   filterNum: string;
@@ -25,8 +27,18 @@ export default function FilterBar({
   const hasFilters = Boolean(filterSchool || filterNum || filterCourseName);
 
   return (
-    <div className="mb-4">
-      <div className="bg-[#faf8f4] border border-[#ddd8cc] rounded-[14px] p-3.5 shadow-sm">
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+      className="mb-4"
+    >
+      <motion.div
+        whileHover={{ y: -1 }}
+        transition={{ type: "spring", stiffness: 240, damping: 20 }}
+        className="bg-[#faf8f4] border border-[#ddd8cc] rounded-[14px] p-3.5 shadow-sm"
+      >
         <div className="flex items-center justify-between gap-3 mb-3">
           <div>
             <div className="text-xs font-bold uppercase tracking-wider text-[#9a9282]">
@@ -37,55 +49,87 @@ export default function FilterBar({
             </div>
           </div>
 
-          <button
+          <motion.button
             type="button"
             onClick={onCreate}
-            className="px-4 h-10 rounded-[10px] bg-[#c96332] text-white text-sm font-extrabold cursor-pointer flex items-center justify-center gap-1.5 transition-all hover:bg-[#a34e24] hover:scale-[1.02] hover:shadow-lg active:scale-[0.98] flex-shrink-0"
+            whileHover={{ scale: 1.035, y: -1 }}
+            whileTap={{ scale: 0.96 }}
+            className="px-4 h-10 rounded-[10px] bg-[#c96332] text-white text-sm font-extrabold cursor-pointer flex items-center justify-center gap-1.5 transition-colors hover:bg-[#a34e24] hover:shadow-lg active:scale-[0.98] flex-shrink-0"
             title="Create study group"
           >
             <span>Create Group</span>
-            <span className="text-lg leading-none">+</span>
-          </button>
+            <motion.span
+              animate={{ rotate: [0, 90, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3 }}
+              className="text-lg leading-none"
+            >
+              +
+            </motion.span>
+          </motion.button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <input
-            type="search"
-            value={filterSchool}
-            onChange={(e) => onFilterSchoolChange(e.target.value)}
-            placeholder="School name"
-            className={inputClass}
-          />
-
-          <input
-            type="search"
-            value={filterNum}
-            onChange={(e) => onFilterNumChange(e.target.value)}
-            placeholder="Course number"
-            className={inputClass}
-          />
-
-          <input
-            type="search"
-            value={filterCourseName}
-            onChange={(e) => onFilterCourseNameChange(e.target.value)}
-            placeholder="Course name"
-            className={inputClass}
-          />
-        </div>
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={{
+            hidden: {},
+            show: { transition: { staggerChildren: 0.06 } },
+          }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-2.5"
+        >
+          {[
+            {
+              value: filterSchool,
+              onChange: onFilterSchoolChange,
+              placeholder: "School name",
+            },
+            {
+              value: filterNum,
+              onChange: onFilterNumChange,
+              placeholder: "Course number",
+            },
+            {
+              value: filterCourseName,
+              onChange: onFilterCourseNameChange,
+              placeholder: "Course name",
+            },
+          ].map((input) => (
+            <motion.input
+              key={input.placeholder}
+              variants={{
+                hidden: { opacity: 0, y: 8 },
+                show: { opacity: 1, y: 0 },
+              }}
+              whileFocus={{ scale: 1.015 }}
+              transition={{ duration: 0.22, ease: "easeOut" }}
+              type="search"
+              value={input.value}
+              onChange={(e) => input.onChange(e.target.value)}
+              placeholder={input.placeholder}
+              className={inputClass}
+            />
+          ))}
+        </motion.div>
 
         {hasFilters && (
-          <div className="flex justify-end mt-3">
-            <button
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="flex justify-end mt-3"
+          >
+            <motion.button
               type="button"
               onClick={onClearFilters}
+              whileHover={{ x: -2 }}
+              whileTap={{ scale: 0.96 }}
               className="text-xs font-bold text-[#c96332] bg-transparent border-0 cursor-pointer hover:text-[#a34e24]"
             >
               Clear search
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

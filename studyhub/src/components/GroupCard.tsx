@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import type { StudyGroup } from "../app/StudyHubApp";
 
 const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
@@ -13,7 +14,6 @@ interface GroupCardProps {
   joined: boolean;
   onDetail?: (id: number) => void;
   onJoin?: () => void;
-  onAskToJoin?: () => void;
 }
 
 export default function GroupCard({
@@ -21,7 +21,6 @@ export default function GroupCard({
   joined,
   onDetail,
   onJoin,
-  onAskToJoin,
 }: GroupCardProps) {
   const pct = Math.round((group.cur / group.max) * 100);
   const capacityClass =
@@ -29,32 +28,37 @@ export default function GroupCard({
 
   const isFull = group.cur >= group.max;
   const colors = GI_COLORS_MAP[group.gi] || GI_COLORS_MAP["gi-orange"];
-  const requestPending = group.isPrivate && group.joinRequested && !joined;
-  const canOpenDetails = joined || group.isPrivate;
 
   const handleClick = () => {
-    if (canOpenDetails && onDetail) {
+    if (joined && onDetail) {
       onDetail(group.id);
     }
   };
 
   return (
-    <div
-      className={`bg-[#faf8f4] border border-[#ddd8cc] rounded-[14px] p-5 mb-3 flex items-center gap-4 cursor-pointer transition-all shadow-sm hover:border-[#f0b897] hover:shadow-md hover:-translate-y-0.5 ${
-        canOpenDetails ? "cursor-pointer" : ""
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 14, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.98 }}
+      transition={{ duration: 0.28, ease: "easeOut" }}
+      whileHover={{ y: -3, scale: 1.01 }}
+      whileTap={joined ? { scale: 0.985 } : undefined}
+      className={`bg-[#faf8f4] border border-[#ddd8cc] rounded-[14px] p-5 mb-3 flex items-center gap-4 cursor-pointer transition-colors shadow-sm hover:border-[#f0b897] hover:shadow-lg ${
+        joined ? "pointer" : ""
       }`}
       onClick={handleClick}
-      style={{ cursor: canOpenDetails ? "pointer" : "default" }}
+      style={!joined ? { cursor: "default" } : {}}
     >
-      {/* Icon */}
-      <div
+      <motion.div
+        whileHover={{ rotate: -2, scale: 1.08 }}
+        transition={{ type: "spring", stiffness: 260, damping: 18 }}
         className="w-14 h-14 rounded-[13px] flex items-center justify-center font-black text-lg font-['Syne'] flex-shrink-0 -tracking-0.5px"
         style={{ background: colors.bg, color: colors.text }}
       >
         {group.icon}
-      </div>
+      </motion.div>
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="font-bold text-base text-[#1a1610] font-['Syne'] whitespace-nowrap overflow-hidden text-ellipsis mb-1">
           {group.name}
@@ -66,37 +70,30 @@ export default function GroupCard({
             {group.days} · {group.time.split(" – ")[0]}
           </span>
         </div>
-        {group.isPrivate ? (
-          <div className="mb-2.5">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#edeae2] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#4a4438]">
-              <span aria-hidden="true">🔒</span>
-              Private
-            </span>
-          </div>
-        ) : null}
         <div className="flex items-center gap-2.5">
           <span className="text-xs font-bold text-[#4a4438] whitespace-nowrap">
             {group.cur} / {group.max}
           </span>
           <div className="flex-1 h-1 bg-[#e4e0d6] rounded-full overflow-hidden max-w-[90px]">
-            <div
-              className={`h-full rounded-full transition-all ${capacityClass}`}
-              style={{ width: `${pct}%` }}
-            ></div>
+            <motion.div
+              className={`h-full rounded-full ${capacityClass}`}
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ duration: 0.65, ease: "easeOut" }}
+            />
           </div>
         </div>
       </div>
 
-      {/* Right Section */}
       <div className="flex flex-col items-end gap-2 flex-shrink-0">
         {joined ? (
-          <span className="px-4 py-1.5 text-xs font-bold font-['Plus Jakarta Sans'] rounded-lg bg-[#e8edda] text-[#5a6e3a]">
+          <motion.span
+            initial={{ scale: 0.92 }}
+            animate={{ scale: 1 }}
+            className="px-4 py-1.5 text-xs font-bold font-['Plus Jakarta Sans'] rounded-lg bg-[#e8edda] text-[#5a6e3a]"
+          >
             Joined ✓
-          </span>
-        ) : requestPending ? (
-          <span className="px-4 py-1.5 text-xs font-bold font-['Plus Jakarta Sans'] rounded-lg bg-[#edeae2] text-[#9a9282] border border-[#ddd8cc]">
-            Request Sent
-          </span>
+          </motion.span>
         ) : isFull ? (
           <button
             disabled
@@ -105,23 +102,26 @@ export default function GroupCard({
             Full
           </button>
         ) : (
-          <button
+          <motion.button
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
             onClick={(e) => {
               e.stopPropagation();
-              if (group.isPrivate) {
-                onAskToJoin?.();
-                return;
-              }
-
               onJoin?.();
             }}
             className="px-4 py-1.5 text-xs font-bold font-['Plus Jakarta Sans'] rounded-lg bg-[#faeade] text-[#c96332] transition-all hover:bg-[#c96332] hover:text-white"
           >
-            {group.isPrivate ? "Ask to Join" : "Join"}
-          </button>
+            Join
+          </motion.button>
         )}
-        {(joined || group.isPrivate) && <span className="text-base font-bold text-[#9a9282]">›</span>}
+        <motion.span
+          animate={{ x: joined ? [0, 3, 0] : 0 }}
+          transition={{ duration: 1.6, repeat: joined ? Infinity : 0, repeatDelay: 1.2 }}
+          className="text-base font-bold text-[#9a9282]"
+        >
+          ›
+        </motion.span>
       </div>
-    </div>
+    </motion.div>
   );
 }

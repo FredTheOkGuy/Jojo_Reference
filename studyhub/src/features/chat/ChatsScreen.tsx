@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import type { StudyGroup } from "../../app/types";
 import ChatListItem from "../../components/ui/ChatListItem";
 import TopBar, { AvatarButton, BackButton } from "../../components/ui/TopBar";
@@ -30,15 +31,38 @@ export default function ChatsScreen({
 
       <PageNavigator items={["StudyHub", "Messages"]} />
 
-      <main className="flex-1 px-5 py-5 max-w-2xl mx-auto w-full">
+      <motion.main
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
+        className="flex-1 px-5 py-5 max-w-2xl mx-auto w-full"
+      >
         {myGroups.length > 0 ? (
-          myGroups.map((group) => (
-            <ChatListItem key={group.id} group={group} onOpen={onChat} />
-          ))
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={{ show: { transition: { staggerChildren: 0.06 } } }}
+          >
+            {myGroups.map((group) => (
+              <motion.div
+                key={group.id}
+                variants={{
+                  hidden: { opacity: 0, y: 12 },
+                  show: { opacity: 1, y: 0 },
+                }}
+                whileHover={{ y: -2, scale: 1.01 }}
+                transition={{ duration: 0.24, ease: "easeOut" }}
+              >
+                <ChatListItem group={group} onOpen={onChat} />
+              </motion.div>
+            ))}
+          </motion.div>
         ) : (
-          <EmptyState>Join a study group to start chatting.</EmptyState>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <EmptyState>Join a study group to start chatting.</EmptyState>
+          </motion.div>
         )}
-      </main>
+      </motion.main>
     </div>
   );
 }
