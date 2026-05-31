@@ -4,9 +4,9 @@ import { DocumentsList, ListPanel, MembersList } from "@/components/ui/ContentLi
 import PageNavigator from "@/components/ui/PageNavigator";
 import TopBar, { BackButton } from "@/components/ui/TopBar";
 import { useAuth } from "@/hooks/useAuth";
-import { deleteStudyGroup, leaveStudyGroup, joinStudyGroup } from "@/queries/study_group";
+import { deleteStudyGroup, joinStudyGroup, leaveStudyGroup } from "@/queries/study_group";
 import { db } from "@/services/firebase/firebase";
-import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -27,7 +27,6 @@ function colorForId(id: string) {
 function mapsQuery(address?: string, room?: string) {
   const cleanAddress = String(address ?? "").trim();
   const cleanRoom = String(room ?? "").trim();
-
   if (cleanAddress && cleanRoom) return `${cleanAddress} ${cleanRoom}`;
   return cleanAddress || cleanRoom;
 }
@@ -55,7 +54,6 @@ function MapLocationCard({ address, room }: { address?: string; room?: string })
           <div className="text-sm text-[#9a9282] font-semibold mt-2">Room: {room}</div>
         )}
       </div>
-
       {hasLocation ? (
         <div className="relative h-[280px] bg-[#edeae2] border-t border-[#ddd8cc]">
           <a
@@ -92,6 +90,7 @@ export default function DetailScreen() {
   const [group, setGroup] = useState<any>(null);
   const [members, setMembers] = useState<string[]>([]);
   const [docs, setDocs] = useState<any[]>([]);
+  const [studyGuide, setStudyGuide] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const currentUserName = user?.displayName ?? user?.email ?? user?.uid ?? "";
@@ -107,6 +106,7 @@ export default function DetailScreen() {
         const data = snap.data();
         setGroup({ id: snap.id, ...data });
         setMembers(data.members ?? []);
+        setStudyGuide(data.studyGuide ?? null);
 
         const docsSnap = await getDocs(collection(db, "study_groups", groupId!, "docs"));
         setDocs(docsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
@@ -141,14 +141,14 @@ export default function DetailScreen() {
       await joinStudyGroup(groupId, studentName);
       setMembers(prev => [...prev, studentName]);
       await updateDoc(doc(db, "users", user.uid), {
-             groupIds: arrayUnion(groupId),
-           });
-      navigate("/app")
+        groupIds: arrayUnion(groupId),
+      });
+      navigate("/app");
     } catch (e) {
       console.error(e);
       alert("Failed to join group.");
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -239,6 +239,29 @@ export default function DetailScreen() {
         <ListPanel title="📂 Documents">
           <DocumentsList documents={docItems} />
         </ListPanel>
+
+        {studyGuide && (
+          <ListPanel title="🧠 AI Study Guide">
+            <div className="px-1 py-2">
+              {studyGuide.split('\n').map((line, i) => {
+                const isHeading = line.startsWith('##') || (line.startsWith('**') && line.endsWith('**'));
+                const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '');
+                if (!clean.trim()) return <div key={i} className="h-2" />;
+                return (
+                  <p
+                    key={i}
+                    className={isHeading
+                      ? 'text-sm font-bold text-[#1a1610] mt-4 mb-1'
+                      : 'text-sm text-[#4a4438] leading-relaxed mb-1'
+                    }
+                  >
+                    {clean}
+                  </p>
+                );
+              })}
+            </div>
+          </ListPanel>
+        )}
       </main>
     </div>
   );
