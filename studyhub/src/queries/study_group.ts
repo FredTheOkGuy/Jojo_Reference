@@ -3,30 +3,39 @@
     for the study groups.
 */
 
+// -------------------------------- Imports --------------------------------
 import { app, db } from "@/services/firebase/firebase";
 import { GoogleGenAI } from "@google/genai";
-import { addDoc, arrayRemove, arrayUnion, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { addDoc, arrayRemove, arrayUnion, collection, deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 const storage = getStorage(app);
 
+// Study group creation and management functions
 export async function createStudyGroup(groupName: string,
                           courseCode: string,
                           courseNumber: string,
                           creatorName: string,
-                          studyLocation: string,
-                          studyDateAndTime: Date,
+                          studyAddress: string,
+                          studyRoom: string,
+                          studyDate: Date,
+                          studyTimeStart: Date,
+                          studyTimeEnd: Date,
                           maxStudents: number
+
 ){
     const docRef = await addDoc(collection(db, "study_groups"), {
         groupName: groupName,
         courseCode: courseCode,
         courseNumber: courseNumber,
         creatorName: creatorName,
-        studyLocation: studyLocation,
-        studyDateAndTime: studyDateAndTime,
+        studyAddress: studyAddress,
+        studyRoom: studyRoom,
+        studyDate: studyDate,
+        studyTimeStart: studyTimeStart,
+        studyTimeEnd: studyTimeEnd,
         maxStudents: maxStudents,
         members: [creatorName],
         createdAt: serverTimestamp(),
@@ -53,6 +62,44 @@ export async function leaveStudyGroup(groupId: string, studentName: string) {
   });
 }
 
+export async function deleteStudyGroup(groupId: string) {
+    await deleteDoc(doc(db, "study_groups", groupId));
+}
+
+export async function  editDate(groupId: string, newDate: Date) {
+  await updateDoc(doc(db, "study_groups", groupId), {
+    studyDate: newDate,
+  });
+}
+
+export async function editTime(groupId: string, newStartTime: Date, newEndTime: Date) {
+  await updateDoc(doc(db, "study_groups", groupId), {
+    studyTimeStart: newStartTime,
+    studyTimeEnd: newEndTime,
+  });
+}
+
+export async function editLocation(groupId: string, newAddress: string, newRoom: string) {
+  await updateDoc(doc(db, "study_groups", groupId), {
+    studyAddress: newAddress,
+    studyRoom: newRoom,
+  });
+}
+
+export async function editMaxStudents(groupId: string, newMax: number) {
+  await updateDoc(doc(db, "study_groups", groupId), {
+    maxStudents: newMax,
+  });
+}
+
+export async function editCourse(groupId: string, newCourseCode: string, newCourseNumber: string) {
+  await updateDoc(doc(db, "study_groups", groupId), {
+    courseCode: newCourseCode,
+    courseNumber: newCourseNumber,
+  });
+}
+
+// Documents
 export async function uploadDocument(groupId : string,
                                      file: File,
                                      uploaderName: string
@@ -73,19 +120,6 @@ export async function uploadDocument(groupId : string,
     );
 
     console.log("Document uploaded: ", file.name);
-}
-
-export async function sendMessage(
-                                 groupId: string,
-                                 senderName: string,
-                                 message: string
-                                 ){
-    await addDoc(collection(db, "study_groups", groupId, "chat_messages"), {
-        sender: senderName,
-        message: message,
-        timestamp: serverTimestamp(),
-    });
-    console.log("Message sent: ", message);
 }
 
 export async function generateStudyGuide(
@@ -142,3 +176,18 @@ Keep it clear and concise so the student can follow it during the session.
     createdAt: serverTimestamp(),
   });
 }
+
+// Chat functions
+export async function sendMessage(
+                                 groupId: string,
+                                 senderName: string,
+                                 message: string
+                                 ){
+    await addDoc(collection(db, "study_groups", groupId, "chat_messages"), {
+        sender: senderName,
+        message: message,
+        timestamp: serverTimestamp(),
+    });
+    console.log("Message sent: ", message);
+}
+
