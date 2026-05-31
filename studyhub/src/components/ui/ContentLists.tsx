@@ -4,9 +4,12 @@ import { Card, EmptyState } from "./Card";
 
 interface MembersListProps {
   members: Member[];
+  canKick?: boolean;
+  currentUserName?: string;
+  onKickMember?: (memberName: string) => void;
 }
 
-export function MembersList({ members }: MembersListProps) {
+export function MembersList({ members, canKick = false, currentUserName = "", onKickMember }: MembersListProps) {
   if (members.length === 0) {
     return <EmptyState>No members listed.</EmptyState>;
   }
@@ -14,13 +17,26 @@ export function MembersList({ members }: MembersListProps) {
   return (
     <div className="flex flex-col gap-2.5">
       {members.map((member, idx) => (
-        <MemberRow key={`${member.i}-${idx}`} member={member} />
+        <MemberRow
+          key={`${member.i}-${idx}`}
+          member={member}
+          showKick={canKick && !member.owner && member.n !== currentUserName}
+          onKick={onKickMember}
+        />
       ))}
     </div>
   );
 }
 
-export function MemberRow({ member }: { member: Member }) {
+export function MemberRow({
+  member,
+  showKick = false,
+  onKick,
+}: {
+  member: Member;
+  showKick?: boolean;
+  onKick?: (memberName: string) => void;
+}) {
   return (
     <div className="flex items-center gap-3">
       <div
@@ -36,6 +52,17 @@ export function MemberRow({ member }: { member: Member }) {
         </div>
         <div className="text-xs text-[#9a9282] font-medium">{member.r}</div>
       </div>
+
+      {showKick && (
+        <button
+          type="button"
+          onClick={() => onKick?.(member.n)}
+          className="rounded-lg bg-[#fff1f1] px-3.5 py-2 text-xs font-black text-[#e00000] transition hover:bg-[#ffe1e1] active:scale-[0.98]"
+          aria-label={`Kick ${member.n}`}
+        >
+          Kick
+        </button>
+      )}
     </div>
   );
 }

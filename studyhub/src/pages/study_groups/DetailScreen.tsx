@@ -1,12 +1,31 @@
+import EditGroupModal from "@/components/EditGroupModal";
 import Button from "@/components/ui/Button";
 import { CapacityMeter, Card, InfoBox } from "@/components/ui/Card";
-import { DocumentsList, ListPanel, MembersList } from "@/components/ui/ContentLists";
+import {
+  DocumentsList,
+  ListPanel,
+  MembersList,
+} from "@/components/ui/ContentLists";
 import PageNavigator from "@/components/ui/PageNavigator";
 import TopBar, { BackButton } from "@/components/ui/TopBar";
 import { useAuth } from "@/hooks/useAuth";
-import { deleteStudyGroup, joinStudyGroup, leaveStudyGroup } from "@/queries/study_group";
+import {
+  deleteStudyGroup,
+  joinStudyGroup,
+  leaveStudyGroup,
+} from "@/queries/study_group";
 import { db } from "@/services/firebase/firebase";
-import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  addDoc,
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -31,7 +50,13 @@ function mapsQuery(address?: string, room?: string) {
   return cleanAddress || cleanRoom;
 }
 
-function MapLocationCard({ address, room }: { address?: string; room?: string }) {
+function MapLocationCard({
+  address,
+  room,
+}: {
+  address?: string;
+  room?: string;
+}) {
   const queryText = mapsQuery(address, room);
   const hasLocation = queryText.length > 0 && queryText.toLowerCase() !== "tbd";
   const embedUrl = hasLocation
@@ -51,7 +76,9 @@ function MapLocationCard({ address, room }: { address?: string; room?: string })
           {address || "Location TBD"}
         </div>
         {room && room !== "TBD" && (
-          <div className="text-sm text-[#9a9282] font-semibold mt-2">Room: {room}</div>
+          <div className="text-sm text-[#9a9282] font-semibold mt-2">
+            Room: {room}
+          </div>
         )}
       </div>
       {hasLocation ? (
@@ -92,9 +119,15 @@ export default function DetailScreen() {
   const [docs, setDocs] = useState<any[]>([]);
   const [studyGuide, setStudyGuide] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const currentUserName = user?.displayName ?? user?.email ?? user?.uid ?? "";
   const joined = currentUserName ? members.includes(currentUserName) : false;
+  const isOwner = Boolean(
+    group?.creatorName &&
+    currentUserName &&
+    group.creatorName === currentUserName,
+  );
 
   useEffect(() => {
     if (!groupId) return;
@@ -102,14 +135,19 @@ export default function DetailScreen() {
     async function load() {
       try {
         const snap = await getDoc(doc(db, "study_groups", groupId!));
-        if (!snap.exists()) { navigate("/app"); return; }
+        if (!snap.exists()) {
+          navigate("/app");
+          return;
+        }
         const data = snap.data();
         setGroup({ id: snap.id, ...data });
         setMembers(data.members ?? []);
         setStudyGuide(data.studyGuide ?? null);
 
-        const docsSnap = await getDocs(collection(db, "study_groups", groupId!, "docs"));
-        setDocs(docsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+        const docsSnap = await getDocs(
+          collection(db, "study_groups", groupId!, "docs"),
+        );
+        setDocs(docsSnap.docs.map((d) => ({ id: d.id, ...d.data() })));
       } catch (e) {
         console.error(e);
       } finally {
@@ -120,17 +158,64 @@ export default function DetailScreen() {
   }, [groupId]);
 
   const handleLeave = async () => {
-    if (!user || !groupId) return;
+    if (!user || !groupId || isOwner) return;
     try {
       const studentName = user.displayName ?? user.email ?? user.uid;
       await leaveStudyGroup(groupId, studentName, user.uid);
-      if (group.creatorName === studentName) {
-        deleteStudyGroup(groupId);
-      }
       navigate("/app");
     } catch (e) {
       console.error(e);
       alert("Failed to leave group.");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!groupId || !isOwner) return;
+    const confirmed = window.confirm(
+      "Delete this study group? This removes it for every member.",
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteStudyGroup(groupId);
+      navigate("/app");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete group.");
+    }
+  };
+
+  const handleEditSaved = (updatedFields: Record<string, any>) => {
+    setGroup((prev: any) => (prev ? { ...prev, ...updatedFields } : prev));
+  };
+
+  const handleKickMember = async (memberName: string) => {
+    if (!groupId || !isOwner || !memberName) return;
+    if (memberName === group.creatorName || memberName === currentUserName)
+      return;
+
+    const confirmed = window.confirm(
+      `Kick ${memberName} from this study group?`,
+    );
+    if (!confirmed) return;
+
+    try {
+      await updateDoc(doc(db, "study_groups", groupId), {
+        members: arrayRemove(memberName),
+      });
+
+      await addDoc(collection(db, "study_groups", groupId, "chat_messages"), {
+        sender: "System",
+        message: `${memberName} was removed from the group by the host.`,
+        timestamp: serverTimestamp(),
+      });
+
+      await handleLeave(memberName, targetUserId, false, true);
+
+      setMembers((prev) => prev.filter((member) => member !== memberName));
+    } catch (e) {
+      console.error(e);
+      alert("Failed to kick this member.");
     }
   };
 
@@ -139,7 +224,7 @@ export default function DetailScreen() {
     try {
       const studentName = user.displayName ?? user.email ?? user.uid;
       await joinStudyGroup(groupId, studentName);
-      setMembers(prev => [...prev, studentName]);
+      setMembers((prev) => [...prev, studentName]);
       await updateDoc(doc(db, "users", user.uid), {
         groupIds: arrayUnion(groupId),
       });
@@ -165,10 +250,38 @@ export default function DetailScreen() {
   const course = `${group.courseCode ?? ""} ${group.courseNumber ?? ""}`.trim();
   const studyAddress = group.studyAddress ?? group.location ?? "";
   const studyRoom = group.studyRoom ?? "";
-  const startTime = group.studyTimeStart?.toDate?.().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ?? group.startTime ?? "—";
-  const endTime = group.studyTimeEnd?.toDate?.().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) ?? group.endTime ?? "—";
+  const startDateValue =
+    group.studyTimeStart?.toDate?.() ??
+    (group.studyTimeStart instanceof Date ? group.studyTimeStart : null);
+  const endDateValue =
+    group.studyTimeEnd?.toDate?.() ??
+    (group.studyTimeEnd instanceof Date ? group.studyTimeEnd : null);
+  const studyDateValue =
+    group.studyDate?.toDate?.() ??
+    (group.studyDate instanceof Date ? group.studyDate : null);
+  const startTime =
+    startDateValue?.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }) ??
+    group.startTime ??
+    "—";
+  const endTime =
+    endDateValue?.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    }) ??
+    group.endTime ??
+    "—";
   const scheduleTime = `${startTime} – ${endTime}`;
-  const studyDate = group.studyDate?.toDate?.().toLocaleDateString([], { weekday: "long", month: "short", day: "numeric" }) ?? group.day ?? "—";
+  const studyDate =
+    studyDateValue?.toLocaleDateString([], {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    }) ??
+    group.day ??
+    "—";
 
   const memberItems = members.map((m: string) => ({
     i: m.slice(0, 2).toUpperCase(),
@@ -180,7 +293,11 @@ export default function DetailScreen() {
 
   const docItems = docs.map((d: any) => ({
     n: d.name,
-    t: (d.type?.includes("pdf") ? "pdf" : d.type?.includes("word") ? "docx" : "pdf") as "pdf" | "docx" | "pptx",
+    t: (d.type?.includes("pdf")
+      ? "pdf"
+      : d.type?.includes("word")
+        ? "docx"
+        : "pdf") as "pdf" | "docx" | "pptx",
     s: d.size ? `${(d.size / 1024 / 1024).toFixed(1)} MB` : "—",
     url: d.url,
   }));
@@ -188,7 +305,9 @@ export default function DetailScreen() {
   return (
     <div className="flex flex-col min-h-screen bg-[#f2ede3]">
       <TopBar title="" left={<BackButton onClick={() => navigate(-1)} />} />
-      <PageNavigator items={["StudyHub", "Group Details", group.groupName ?? ""]} />
+      <PageNavigator
+        items={["StudyHub", "Group Details", group.groupName ?? ""]}
+      />
 
       <main className="max-w-2xl mx-auto px-5 py-7 w-full flex-1">
         <Card className="rounded-[18px] p-6 mb-4">
@@ -212,12 +331,54 @@ export default function DetailScreen() {
             </div>
           </div>
 
+          {isOwner && (
+            <div className="mb-4 rounded-2xl border border-[#f0b897] bg-[#fff4ec] p-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
+              <div>
+                <div className="font-['Syne'] text-lg font-black text-[#1a1610]">
+                  You own this group
+                </div>
+                <p className="text-sm font-medium text-[#9a9282]">
+                  You can edit the group info or delete the whole study group.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowEditModal(true)}
+                className="mt-3 rounded-xl bg-[#c96332] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#a34e24] sm:mt-0"
+              >
+                Edit Group
+              </button>
+            </div>
+          )}
+
           <div className="flex gap-2.5">
-            <Button label="Open Chat" onClick={() => navigate(`/app/chat/${groupId}`)} variant="primary" fullWidth />
-            {joined ? (
-              <Button label="Leave Group" onClick={handleLeave} variant="danger" fullWidth />
+            <Button
+              label="Open Chat"
+              onClick={() => navigate(`/app/chat/${groupId}`)}
+              variant="primary"
+              fullWidth
+            />
+            {isOwner ? (
+              <Button
+                label="Delete Group"
+                onClick={handleDelete}
+                variant="danger"
+                fullWidth
+              />
+            ) : joined ? (
+              <Button
+                label="Leave Group"
+                onClick={handleLeave}
+                variant="danger"
+                fullWidth
+              />
             ) : (
-              <Button label="Join Group" onClick={handleJoin} variant="primary" fullWidth />
+              <Button
+                label="Join Group"
+                onClick={handleJoin}
+                variant="primary"
+                fullWidth
+              />
             )}
           </div>
         </Card>
@@ -225,15 +386,29 @@ export default function DetailScreen() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-4">
           <InfoBox
             label="👥 Capacity"
-            value={<CapacityMeter current={members.length} max={group.maxStudents ?? 0} />}
+            value={
+              <CapacityMeter
+                current={members.length}
+                max={group.maxStudents ?? 0}
+              />
+            }
           />
-          <InfoBox label="⏱️ Schedule" value={studyDate} subValue={scheduleTime} />
+          <InfoBox
+            label="⏱️ Schedule"
+            value={studyDate}
+            subValue={scheduleTime}
+          />
         </div>
 
         <MapLocationCard address={studyAddress} room={studyRoom} />
 
         <ListPanel title={`👥 Members (${memberItems.length})`}>
-          <MembersList members={memberItems} />
+          <MembersList
+            members={memberItems}
+            canKick={isOwner}
+            currentUserName={currentUserName}
+            onKickMember={handleKickMember}
+          />
         </ListPanel>
 
         <ListPanel title="📂 Documents">
@@ -243,16 +418,19 @@ export default function DetailScreen() {
         {studyGuide && (
           <ListPanel title="🧠 AI Study Guide">
             <div className="px-1 py-2">
-              {studyGuide.split('\n').map((line, i) => {
-                const isHeading = line.startsWith('##') || (line.startsWith('**') && line.endsWith('**'));
-                const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '');
+              {studyGuide.split("\n").map((line, i) => {
+                const isHeading =
+                  line.startsWith("##") ||
+                  (line.startsWith("**") && line.endsWith("**"));
+                const clean = line.replace(/^#+\s*/, "").replace(/\*\*/g, "");
                 if (!clean.trim()) return <div key={i} className="h-2" />;
                 return (
                   <p
                     key={i}
-                    className={isHeading
-                      ? 'text-sm font-bold text-[#1a1610] mt-4 mb-1'
-                      : 'text-sm text-[#4a4438] leading-relaxed mb-1'
+                    className={
+                      isHeading
+                        ? "text-sm font-bold text-[#1a1610] mt-4 mb-1"
+                        : "text-sm text-[#4a4438] leading-relaxed mb-1"
                     }
                   >
                     {clean}
@@ -263,6 +441,15 @@ export default function DetailScreen() {
           </ListPanel>
         )}
       </main>
+
+      {isOwner && (
+        <EditGroupModal
+          open={showEditModal}
+          group={group}
+          onClose={() => setShowEditModal(false)}
+          onSaved={handleEditSaved}
+        />
+      )}
     </div>
   );
 }
