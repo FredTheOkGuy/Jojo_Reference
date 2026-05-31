@@ -9,6 +9,8 @@ import { db } from "@/services/firebase/firebase";
 import { arrayUnion, collection, doc, getDoc, getDocs, updateDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const GI_COLORS = [
   { bg: "#faeade", text: "#c96332" },
@@ -242,23 +244,44 @@ export default function DetailScreen() {
 
         {studyGuide && (
           <ListPanel title="🧠 AI Study Guide">
-            <div className="px-1 py-2">
-              {studyGuide.split('\n').map((line, i) => {
-                const isHeading = line.startsWith('##') || (line.startsWith('**') && line.endsWith('**'));
-                const clean = line.replace(/^#+\s*/, '').replace(/\*\*/g, '');
-                if (!clean.trim()) return <div key={i} className="h-2" />;
-                return (
-                  <p
-                    key={i}
-                    className={isHeading
-                      ? 'text-sm font-bold text-[#1a1610] mt-4 mb-1'
-                      : 'text-sm text-[#4a4438] leading-relaxed mb-1'
-                    }
-                  >
-                    {clean}
-                  </p>
-                );
-              })}
+
+
+            <div className="px-1 py-2 prose prose-sm max-w-none">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  h1: ({ children }) => (
+                    <h1 className="text-xl font-bold text-[#1a1610] mt-4 mb-2">
+                      {children}
+                    </h1>
+                  ),
+                  h2: ({ children }) => (
+                    <h2 className="text-lg font-bold text-[#1a1610] mt-4 mb-2">
+                      {children}
+                    </h2>
+                  ),
+                  p: ({ children }) => (
+                    <p className="text-sm text-[#4a4438] leading-relaxed mb-2">
+                      {children}
+                    </p>
+                  ),
+                  li: ({ children }) => (
+                    <li className="ml-4 list-disc text-sm text-[#4a4438]">
+                      {children}
+                    </li>
+                  ),
+                  strong: ({ children }) => (
+                    <strong className="font-bold text-[#1a1610]">
+                      {children}
+                    </strong>
+                  ),
+                  hr: () => (
+                    <hr className="my-6 border-[#ddd8cc]" />
+                  ),
+                }}
+              >
+                {studyGuide}
+              </ReactMarkdown>
             </div>
           </ListPanel>
         )}

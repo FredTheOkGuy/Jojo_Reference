@@ -3,6 +3,8 @@ import { createStudyGroup, generateStudyGuide, uploadDocument } from '@/queries/
 import { db } from '@/services/firebase/firebase';
 import { arrayUnion, doc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
+import { Autocomplete } from "@react-google-maps/api";
+import { useRef } from "react";
 
 interface CreateGroupModalProps {
   open: boolean;
@@ -26,6 +28,27 @@ export default function CreateGroupModal({ open, onClose, onCreated }: CreateGro
   const [chapters, setChapters] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState('');
+
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+
+  function onAutocompleteLoad(
+    autocomplete: google.maps.places.Autocomplete
+  ) {
+    autocompleteRef.current = autocomplete;
+  }
+
+  function onPlaceChanged() {
+    const place = autocompleteRef.current?.getPlace();
+
+    if (!place) return;
+
+    const formattedAddress =
+      place.formatted_address ??
+      place.name ??
+      "";
+
+    setAddress(formattedAddress);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,7 +139,21 @@ export default function CreateGroupModal({ open, onClose, onCreated }: CreateGro
 
           <div className="mb-4">
             <label className={labelCls}>Address (for map)</label>
-            <input type="text" placeholder="e.g. Webster Library, 1400 De Maisonneuve Blvd W" value={address} onChange={(e) => setAddress(e.target.value)} className={inputCls} />
+            <Autocomplete
+              onLoad={onAutocompleteLoad}
+              onPlaceChanged={onPlaceChanged}
+              options={{
+                componentRestrictions: { country: "ca" },
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Search for a building or address..."
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className={inputCls}
+              />
+            </Autocomplete>
           </div>
 
           <div className="mb-4">
