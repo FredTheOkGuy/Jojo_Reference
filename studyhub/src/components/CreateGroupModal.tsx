@@ -1,22 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import type { CreateGroupPayload } from "../app/types";
 
 interface CreateGroupModalProps {
   open: boolean;
   onClose: () => void;
-  onCreate: (data: {
-    name: string;
-    code: string;
-    number: string;
-    location: string;
-    mapLocation: string;
-    day: string;
-    startTime: string;
-    endTime: string;
-    maxMembers: number;
-    isPrivate: boolean;
-  }) => void;
+  onCreate: (data: CreateGroupPayload) => void;
+  initialData?: CreateGroupPayload;
+  mode?: "create" | "edit";
 }
 
 const inputClass =
@@ -27,10 +19,29 @@ const fieldVariant = {
   show: { opacity: 1, y: 0 },
 };
 
+const emptyForm: CreateGroupPayload = {
+  name: "",
+  code: "",
+  number: "",
+  location: "",
+  mapLocation: "",
+  day: "",
+  startTime: "17:00",
+  endTime: "18:00",
+  maxMembers: 8,
+  isPrivate: false,
+};
+
+const normalizeDateForInput = (value: string) => {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? value : "";
+};
+
 export default function CreateGroupModal({
   open,
   onClose,
   onCreate,
+  initialData,
+  mode = "create",
 }: CreateGroupModalProps) {
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
@@ -43,23 +54,25 @@ export default function CreateGroupModal({
   const [maxMembers, setMaxMembers] = useState("8");
   const [isPrivate, setIsPrivate] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const isEditMode = mode === "edit";
 
-    onCreate({
-      name: name || "New Study Group",
-      code: code.toUpperCase() || "MISC",
-      number: number || "000",
-      location: location || "TBD",
-      mapLocation:
-        mapLocation || location || "Concordia University, Montreal, QC",
-      day: date,
-      startTime,
-      endTime,
-      maxMembers: parseInt(maxMembers) || 8,
-      isPrivate,
-    });
+  useEffect(() => {
+    if (!open) return;
 
+    const data = initialData ?? emptyForm;
+    setName(data.name);
+    setCode(data.code);
+    setNumber(data.number);
+    setLocation(data.location);
+    setMapLocation(data.mapLocation);
+    setDate(normalizeDateForInput(data.day));
+    setStartTime(data.startTime || "17:00");
+    setEndTime(data.endTime || "18:00");
+    setMaxMembers(String(data.maxMembers || 8));
+    setIsPrivate(data.isPrivate);
+  }, [initialData, open]);
+
+  const resetCreateForm = () => {
     setName("");
     setCode("");
     setNumber("");
@@ -70,6 +83,28 @@ export default function CreateGroupModal({
     setEndTime("18:00");
     setMaxMembers("8");
     setIsPrivate(false);
+  };
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    onCreate({
+      name: name || "New Study Group",
+      code: code.toUpperCase() || "MISC",
+      number: number || "000",
+      location: location || "TBD",
+      mapLocation:
+        mapLocation || location || "Concordia University, Montreal, QC",
+      day: date || initialData?.day || "",
+      startTime,
+      endTime,
+      maxMembers: parseInt(maxMembers) || 8,
+      isPrivate,
+    });
+
+    if (!isEditMode) {
+      resetCreateForm();
+    }
   };
 
   return (
@@ -123,9 +158,16 @@ export default function CreateGroupModal({
             <div className="studyhub-modal-scroll max-h-[92dvh] overflow-y-auto">
               <div className="p-[clamp(1.125rem,5vw,1.75rem)] pr-[clamp(1rem,4vw,1.25rem)]">
                 <div className="flex items-start justify-between gap-4 mb-6">
-                  <span className="font-black text-2xl text-[#1a1610] font-['Syne'] leading-tight">
-                    Create Study Group
-                  </span>
+                  <div>
+                    <span className="font-black text-2xl text-[#1a1610] font-['Syne'] leading-tight">
+                      {isEditMode ? "Edit Study Group" : "Create Study Group"}
+                    </span>
+                    {isEditMode && (
+                      <p className="mt-1 text-xs font-medium text-[#9a9282]">
+                        Update the group info shown to members.
+                      </p>
+                    )}
+                  </div>
 
                   <motion.button
                     type="button"
@@ -297,7 +339,7 @@ export default function CreateGroupModal({
                     whileTap={{ scale: 0.96 }}
                     className="w-full py-3.5 bg-[#c96332] text-white font-bold rounded-[9px] transition-colors hover:bg-[#a34e24] hover:shadow-lg"
                   >
-                    Create Group →
+                    {isEditMode ? "Save Changes →" : "Create Group →"}
                   </motion.button>
                 </motion.form>
               </div>

@@ -157,6 +157,63 @@ export default function StudyHubApp() {
   };
 
 
+  const groupToFormData = (group: StudyGroup): CreateGroupPayload => {
+    const [code = "MISC", number = "000"] = group.course.split(" ");
+    const [startTime = "17:00", endTime = "18:00"] = group.time.includes(" – ")
+      ? group.time.split(" – ")
+      : ["17:00", "18:00"];
+
+    return {
+      name: group.name,
+      code: group.filterCode || code,
+      number: group.filterNum || number,
+      location: group.location,
+      mapLocation: group.mapLocation || group.location,
+      day: group.days,
+      startTime,
+      endTime,
+      maxMembers: group.max,
+      isPrivate: group.isPrivate,
+    };
+  };
+
+  const handleUpdateGroup = (id: number, data: CreateGroupPayload) => {
+    setGroups((currentGroups) =>
+      currentGroups.map((group) =>
+        group.id === id
+          ? {
+              ...group,
+              name: data.name || "New Study Group",
+              course: `${data.code || "MISC"} ${data.number || "000"}`,
+              icon: (data.name || data.code || "NEW")
+                .split(" ")
+                .map((part) => part[0])
+                .join("")
+                .substring(0, 2)
+                .toUpperCase(),
+              max: data.maxMembers || group.max,
+              isPrivate: data.isPrivate,
+              location: data.location || "TBD",
+              mapLocation:
+                data.mapLocation ||
+                data.location ||
+                "Concordia University, Montreal, QC",
+              days: data.day || group.days,
+              time:
+                data.startTime && data.endTime
+                  ? `${data.startTime} – ${data.endTime}`
+                  : group.time,
+              desc: `A study group for ${data.code || "MISC"} ${
+                data.number || "000"
+              }.`,
+              filterCode: data.code || "MISC",
+              filterNum: data.number || "000",
+            }
+          : group,
+      ),
+    );
+  };
+
   const requestGroup =
     requestGroupId === null
       ? undefined
@@ -281,6 +338,7 @@ export default function StudyHubApp() {
     return (
       <DetailScreen
         group={activeGroup}
+        editInitialData={groupToFormData(activeGroup)}
         onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
         onChat={() => {
           setChatFrom("detail");
@@ -290,6 +348,7 @@ export default function StudyHubApp() {
           handleLeave(activeGroup.id);
           setScreen(detailFrom === "chats" ? "chats" : "main");
         }}
+        onUpdate={(data) => handleUpdateGroup(activeGroup.id, data)}
       />
     );
   }

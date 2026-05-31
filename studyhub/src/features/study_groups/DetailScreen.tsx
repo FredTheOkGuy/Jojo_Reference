@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import type { StudyGroup } from "../../app/types";
+import type { CreateGroupPayload, StudyGroup } from "../../app/types";
 import Button from "../../components/ui/Button";
 import TopBar, { BackButton } from "../../components/ui/TopBar";
 import { CapacityMeter, Card, InfoBox } from "../../components/ui/Card";
@@ -8,15 +9,18 @@ import {
   ListPanel,
   MembersList,
 } from "../../components/ui/ContentLists";
-import { GI_COLORS_MAP } from "../../data/mockData";
+import { CURRENT_USER, GI_COLORS_MAP } from "../../data/mockData";
 import PageNavigator from "../../components/ui/PageNavigator";
 import EmbeddedMap from "../../components/EmbeddedMap";
+import CreateGroupModal from "../../components/CreateGroupModal";
 
 interface DetailScreenProps {
   group: StudyGroup;
   onBack: () => void;
   onChat: () => void;
   onLeave: () => void;
+  onUpdate: (data: CreateGroupPayload) => void;
+  editInitialData: CreateGroupPayload;
 }
 
 export default function DetailScreen({
@@ -24,8 +28,14 @@ export default function DetailScreen({
   onBack,
   onChat,
   onLeave,
+  onUpdate,
+  editInitialData,
 }: DetailScreenProps) {
+  const [showEditModal, setShowEditModal] = useState(false);
   const colors = GI_COLORS_MAP[group.gi] || GI_COLORS_MAP["gi-orange"];
+  const isOwner = group.members.some(
+    (member) => member.owner && member.i === CURRENT_USER.initials,
+  );
 
   return (
     <div className="flex min-h-[100dvh] w-full flex-col overflow-x-hidden bg-[#f2ede3]">
@@ -85,6 +95,36 @@ export default function DetailScreen({
             >
               {group.desc}
             </motion.p>
+
+            {isOwner && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.24 }}
+                className="mb-3 rounded-[14px] border border-[#f0b897] bg-[#fff4ec] px-4 py-3"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm font-black text-[#1a1610] font-['Syne']">
+                      You own this group
+                    </p>
+                    <p className="text-xs font-medium text-[#9a9282]">
+                      You can edit the group name, course, date, time, capacity, privacy, and location.
+                    </p>
+                  </div>
+
+                  <motion.button
+                    type="button"
+                    whileHover={{ y: -2, scale: 1.02 }}
+                    whileTap={{ scale: 0.96 }}
+                    onClick={() => setShowEditModal(true)}
+                    className="rounded-[10px] bg-[#c96332] px-4 py-2 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#a34e24]"
+                  >
+                    Edit Group
+                  </motion.button>
+                </div>
+              </motion.div>
+            )}
 
             <div className="flex flex-col gap-2.5 sm:flex-row">
               <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.96 }} className="flex-1">
@@ -162,6 +202,17 @@ export default function DetailScreen({
           </ListPanel>
         </motion.div>
       </motion.main>
+
+      <CreateGroupModal
+        open={showEditModal}
+        mode="edit"
+        initialData={editInitialData}
+        onClose={() => setShowEditModal(false)}
+        onCreate={(data) => {
+          onUpdate(data);
+          setShowEditModal(false);
+        }}
+      />
     </div>
   );
 }
