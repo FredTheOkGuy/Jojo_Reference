@@ -13,6 +13,7 @@ interface GroupCardProps {
   joined: boolean;
   onDetail?: (id: number) => void;
   onJoin?: () => void;
+  onAskToJoin?: () => void;
 }
 
 export default function GroupCard({
@@ -20,6 +21,7 @@ export default function GroupCard({
   joined,
   onDetail,
   onJoin,
+  onAskToJoin,
 }: GroupCardProps) {
   const pct = Math.round((group.cur / group.max) * 100);
   const capacityClass =
@@ -27,9 +29,11 @@ export default function GroupCard({
 
   const isFull = group.cur >= group.max;
   const colors = GI_COLORS_MAP[group.gi] || GI_COLORS_MAP["gi-orange"];
+  const requestPending = group.isPrivate && group.joinRequested && !joined;
+  const canOpenDetails = joined || group.isPrivate;
 
   const handleClick = () => {
-    if (joined && onDetail) {
+    if (canOpenDetails && onDetail) {
       onDetail(group.id);
     }
   };
@@ -37,10 +41,10 @@ export default function GroupCard({
   return (
     <div
       className={`bg-[#faf8f4] border border-[#ddd8cc] rounded-[14px] p-5 mb-3 flex items-center gap-4 cursor-pointer transition-all shadow-sm hover:border-[#f0b897] hover:shadow-md hover:-translate-y-0.5 ${
-        joined ? "pointer" : ""
+        canOpenDetails ? "cursor-pointer" : ""
       }`}
       onClick={handleClick}
-      style={!joined ? { cursor: "default" } : {}}
+      style={{ cursor: canOpenDetails ? "pointer" : "default" }}
     >
       {/* Icon */}
       <div
@@ -62,6 +66,14 @@ export default function GroupCard({
             {group.days} · {group.time.split(" – ")[0]}
           </span>
         </div>
+        {group.isPrivate ? (
+          <div className="mb-2.5">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#edeae2] px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-[#4a4438]">
+              <span aria-hidden="true">🔒</span>
+              Private
+            </span>
+          </div>
+        ) : null}
         <div className="flex items-center gap-2.5">
           <span className="text-xs font-bold text-[#4a4438] whitespace-nowrap">
             {group.cur} / {group.max}
@@ -81,6 +93,10 @@ export default function GroupCard({
           <span className="px-4 py-1.5 text-xs font-bold font-['Plus Jakarta Sans'] rounded-lg bg-[#e8edda] text-[#5a6e3a]">
             Joined ✓
           </span>
+        ) : requestPending ? (
+          <span className="px-4 py-1.5 text-xs font-bold font-['Plus Jakarta Sans'] rounded-lg bg-[#edeae2] text-[#9a9282] border border-[#ddd8cc]">
+            Request Sent
+          </span>
         ) : isFull ? (
           <button
             disabled
@@ -92,14 +108,19 @@ export default function GroupCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
+              if (group.isPrivate) {
+                onAskToJoin?.();
+                return;
+              }
+
               onJoin?.();
             }}
             className="px-4 py-1.5 text-xs font-bold font-['Plus Jakarta Sans'] rounded-lg bg-[#faeade] text-[#c96332] transition-all hover:bg-[#c96332] hover:text-white"
           >
-            Join
+            {group.isPrivate ? "Ask to Join" : "Join"}
           </button>
         )}
-        <span className="text-base font-bold text-[#9a9282]">›</span>
+        {(joined || group.isPrivate) && <span className="text-base font-bold text-[#9a9282]">›</span>}
       </div>
     </div>
   );

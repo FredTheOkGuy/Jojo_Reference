@@ -27,6 +27,7 @@ export default function CreateGroupModal({
   const [startTime, setStartTime] = useState("17:00");
   const [endTime, setEndTime] = useState("18:00");
   const [maxMembers, setMaxMembers] = useState("8");
+  const [isPrivate, setIsPrivate] = useState(false);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -47,6 +48,7 @@ export default function CreateGroupModal({
       startTime,
       endTime,
       maxMembers: parseInt(maxMembers) || 8,
+      isPrivate,
     });
 
     setName("");
@@ -58,6 +60,7 @@ export default function CreateGroupModal({
     setStartTime("17:00");
     setEndTime("18:00");
     setMaxMembers("8");
+    setIsPrivate(false);
   };
 
   if (!open) return null;
@@ -221,6 +224,40 @@ export default function CreateGroupModal({
                 onChange={(e) => setEndTime(e.target.value)}
                 className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
               />
+            </div>
+          </div>
+
+          <div className="mb-5 rounded-[12px] border border-[#ddd8cc] bg-[#edeae2] px-4 py-3">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1">
+                  Group Privacy
+                </label>
+                <p className="text-xs text-[#9a9282] font-medium">
+                  Switch between a public group and a private group.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isPrivate}
+                onClick={() => setIsPrivate((current) => !current)}
+                className={`relative inline-flex h-8 w-16 items-center rounded-full border transition-all duration-200 ${
+                  isPrivate
+                    ? "border-[#c96332] bg-[#c96332]"
+                    : "border-[#cfc7b7] bg-[#d7d0c2]"
+                }`}
+              >
+                <span
+                  className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                    isPrivate ? "translate-x-6" : "translate-x-1"
+                  }`}
+                />
+                <span className="sr-only">
+                  {isPrivate ? "Private group" : "Public group"}
+                </span>
+              </button>
             </div>
           </div>
 

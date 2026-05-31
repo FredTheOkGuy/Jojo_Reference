@@ -37,6 +37,8 @@ export interface StudyGroup {
   cur: number;
   max: number;
   joined: boolean;
+  isPrivate: boolean;
+  joinRequested: boolean;
 
   /*
     FYI/custom room field.
@@ -66,6 +68,7 @@ export interface CreateGroupPayload {
   name: string;
   code: string;
   number: string;
+  isPrivate: boolean;
 
   /*
     FYI/custom room field.

@@ -6,6 +6,7 @@ import ChatsScreen from "../features/chat/ChatsScreen";
 import DetailScreen from "../pages/study_groups/DetailScreen";
 import ChatScreen from "../features/chat/ChatScreen";
 import ProfileScreen from "../features/profile/ProfileScreen";
+import AskToJoinModal from "../components/AskToJoinModal";
 import { logout } from "../services/firebase/auth";
 
 import type { CreateGroupPayload, StudyGroup } from "./types";
@@ -27,13 +28,41 @@ export default function StudyHubApp() {
   const [filterNum, setFilterNum] = useState("");
   const [filterCourseName, setFilterCourseName] = useState("");
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
+  const [requestGroupId, setRequestGroupId] = useState<number | null>(null);
   const [detailFrom, setDetailFrom] = useState<"main" | "chats">("main");
   const [chatFrom, setChatFrom] = useState<"detail" | "chats">("detail");
+  const activeGroup =
+    activeGroupId === null
+      ? undefined
+      : groups.find((g) => g.id === activeGroupId);
+
+  const requestGroup =
+    requestGroupId === null
+      ? undefined
+      : groups.find((g) => g.id === requestGroupId);
+
+  const requestModal = (
+    <AskToJoinModal
+      open={Boolean(requestGroup)}
+      group={requestGroup}
+      onClose={() => setRequestGroupId(null)}
+      onConfirm={() => {
+        if (requestGroup) {
+          setGroups((currentGroups) =>
+            currentGroups.map((g) =>
+              g.id === requestGroup.id ? { ...g, joinRequested: true } : g,
+            ),
+          );
+          setRequestGroupId(null);
+        }
+      }}
+    />
+  );
 
   const handleJoin = (id: number) => {
     setGroups((currentGroups) =>
       currentGroups.map((g) => {
-        if (g.id !== id || g.joined || g.cur >= g.max) return g;
+        if (g.id !== id || g.joined || g.cur >= g.max || g.isPrivate) return g;
 
         return {
           ...g,
@@ -100,6 +129,8 @@ export default function StudyHubApp() {
       cur: 1,
       max: data.maxMembers || 8,
       joined: true,
+      isPrivate: data.isPrivate,
+      joinRequested: false,
 
       location: data.location || "TBD",
 
@@ -192,6 +223,26 @@ export default function StudyHubApp() {
 
   if (screen === "main") {
     return (
+      <>
+        {requestModal}
+        <MainScreen
+          groups={groups}
+          filterCode={filterCode}
+          filterNum={filterNum}
+          onFilterCodeChange={setFilterCode}
+          onFilterNumChange={setFilterNum}
+          onDetail={(id) => {
+            setActiveGroupId(id);
+            setDetailFrom("main");
+            setScreen("detail");
+          }}
+          onChats={() => setScreen("chats")}
+          onProfile={() => setScreen("profile")}
+          onJoin={handleJoin}
+          onAskToJoin={(id) => setRequestGroupId(id)}
+          onCreate={handleCreateGroup}
+        />
+      </>
       <MainScreen
         groups={groups}
         filterSchool={filterSchool}
@@ -238,47 +289,57 @@ export default function StudyHubApp() {
     );
   }
 
-  const activeGroup =
-    activeGroupId === null
-      ? undefined
-      : groups.find((g) => g.id === activeGroupId);
-
   if (screen === "detail" && activeGroup) {
     return (
-      <DetailScreen
-        group={activeGroup}
-        onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
-        onChat={() => {
-          setChatFrom("detail");
-          setScreen("chat");
-        }}
-        onLeave={() => {
-          handleLeave(activeGroup.id);
-          setScreen(detailFrom === "chats" ? "chats" : "main");
-        }}
-      />
+      <>
+        {requestModal}
+        <DetailScreen
+          group={activeGroup}
+          onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
+          onChat={() => {
+            setChatFrom("detail");
+            setScreen("chat");
+          }}
+          onLeave={() => {
+            handleLeave(activeGroup.id);
+            setScreen(detailFrom === "chats" ? "chats" : "main");
+          }}
+          onAskToJoin={(id) => setRequestGroupId(id)}
+        />
+      </>
     );
   }
 
   if (screen === "chat" && activeGroup) {
     return (
-      <ChatScreen
-        group={activeGroup}
-        onBack={() => setScreen(chatFrom === "chats" ? "chats" : "detail")}
-        onSendMessage={handleSendMessage}
-      />
+      <>
+        {requestModal}
+        <ChatScreen
+          group={activeGroup}
+          onBack={() => setScreen(chatFrom === "chats" ? "chats" : "detail")}
+          onSendMessage={handleSendMessage}
+        />
+      </>
     );
   }
 
   if (screen === "profile") {
     return (
-      <ProfileScreen
-        groups={groups}
-        onBack={() => setScreen("main")}
-        onSignOut={handleSignOut}
-      />
+      <>
+        {requestModal}
+        <ProfileScreen
+          groups={groups}
+          onBack={() => setScreen("main")}
+          onSignOut={handleSignOut}
+        />
+      </>
     );
   }
 
-  return <div>Unknown screen</div>;
+  return (
+    <>
+      {requestModal}
+      <div>Unknown screen</div>
+    </>
+  );
 }

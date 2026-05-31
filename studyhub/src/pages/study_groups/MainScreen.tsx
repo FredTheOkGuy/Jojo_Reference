@@ -24,6 +24,7 @@ interface MainScreenProps {
   onChats: () => void;
   onProfile: () => void;
   onJoin: (id: number) => void;
+  onAskToJoin: (id: number) => void;
   onCreate: (data: CreateGroupPayload) => void;
 }
 
@@ -40,11 +41,13 @@ export default function MainScreen({
   onChats,
   onProfile,
   onJoin,
+  onAskToJoin,
   onCreate,
 }: MainScreenProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const myGroups = groups.filter((g) => g.joined);
-  const openGroups = groups.filter((g) => !g.joined);
+  const openGroups = groups.filter((g) => !g.joined && !g.isPrivate);
+  const privateGroups = groups.filter((g) => !g.joined && g.isPrivate);
 
   const normalize = (value?: string) => value?.toLowerCase().trim() ?? "";
 
@@ -67,6 +70,12 @@ export default function MainScreen({
       !schoolQuery ||
       normalize(getSchoolSearchText(group)).includes(schoolQuery);
 
+  const courseCodes = [
+    ...new Set(groups.map((g) => g.filterCode).filter(Boolean)),
+  ] as string[];
+  const courseNumbers = [
+    ...new Set(groups.map((g) => g.filterNum).filter(Boolean)),
+  ] as string[];
     const numberMatch =
       !numberQuery ||
       normalize(group.filterNum || group.course).includes(numberQuery);
@@ -78,6 +87,12 @@ export default function MainScreen({
       );
 
     return schoolMatch && numberMatch && courseNameMatch;
+  });
+
+  const filteredPrivateGroups = privateGroups.filter((g) => {
+    const codeMatch = !filterCode || g.filterCode === filterCode;
+    const numMatch = !filterNum || g.filterNum === filterNum;
+    return codeMatch && numMatch;
   });
 
   return (
@@ -133,6 +148,23 @@ export default function MainScreen({
           ))
         ) : (
           <EmptyState>No study groups match your search.</EmptyState>
+        )}
+
+        <div className="h-px bg-[#ddd8cc] my-7" />
+
+        <SectionHeader title="Private Study Groups" />
+        {filteredPrivateGroups.length > 0 ? (
+          filteredPrivateGroups.map((group) => (
+            <GroupCard
+              key={group.id}
+              group={group}
+              joined={false}
+              onDetail={onDetail}
+              onAskToJoin={() => onAskToJoin(group.id)}
+            />
+          ))
+        ) : (
+          <EmptyState>No private groups match your filters.</EmptyState>
         )}
       </main>
 

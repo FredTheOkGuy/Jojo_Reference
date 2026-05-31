@@ -8,6 +8,11 @@ export function useAuth() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!auth) {
+            setLoading(false)
+            return
+        }
+
         const unsub = onAuthStateChanged(auth, (firebaseUser) => {
             setUser(firebaseUser)
             setLoading(false)
