@@ -11,7 +11,8 @@ interface CreateGroupModalProps {
     location: string;
     mapLocation: string;
     day: string;
-    time: string;
+    startTime: string;
+    endTime: string;
     maxMembers: number;
   }) => void;
 }
@@ -27,7 +28,8 @@ export default function CreateGroupModal({
   const [location, setLocation] = useState("");
   const [mapLocation, setMapLocation] = useState("");
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("17:00");
+  const [startTime, setStartTime] = useState("17:00");
+  const [endTime, setEndTime] = useState("18:00");
   const [maxMembers, setMaxMembers] = useState("8");
 
   const handleSubmit = (e: FormEvent) => {
@@ -41,7 +43,8 @@ export default function CreateGroupModal({
       mapLocation:
         mapLocation || location || "Concordia University, Montreal, QC",
       day: date,
-      time,
+      startTime,
+      endTime,
       maxMembers: parseInt(maxMembers) || 8,
     });
 
@@ -51,7 +54,8 @@ export default function CreateGroupModal({
     setLocation("");
     setMapLocation("");
     setDate("");
-    setTime("17:00");
+    setStartTime("17:00");
+    setEndTime("18:00");
     setMaxMembers("8");
   };
 
@@ -105,7 +109,7 @@ export default function CreateGroupModal({
                 placeholder="COEN"
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
-                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50/.1)]"
+                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
               />
             </div>
 
@@ -168,31 +172,46 @@ export default function CreateGroupModal({
 
             <div className="flex-1">
               <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-                Time
+                Max Members
               </label>
 
               <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
+                type="number"
+                min="2"
+                max="30"
+                value={maxMembers}
+                onChange={(e) => setMaxMembers(e.target.value)}
                 className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
               />
             </div>
           </div>
 
-          <div className="mb-5">
-            <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
-              Max Members
-            </label>
+          <div className="flex gap-2.5 mb-5">
+            <div className="flex-1">
+              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                Start Time
+              </label>
 
-            <input
-              type="number"
-              min="2"
-              max="30"
-              value={maxMembers}
-              onChange={(e) => setMaxMembers(e.target.value)}
-              className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
-            />
+              <input
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label className="block text-xs font-bold uppercase tracking-wide text-[#4a4438] mb-1.5">
+                End Time
+              </label>
+
+              <input
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="w-full px-4 py-3 bg-[#edeae2] border-2 border-[#ddd8cc] rounded-[9px] text-[#1a1610] text-sm font-medium outline-none transition-all focus:border-[#c96332] focus:shadow-[0_0_0_3px_rgba(201,99,50,.1)]"
+              />
+            </div>
           </div>
 
           <button

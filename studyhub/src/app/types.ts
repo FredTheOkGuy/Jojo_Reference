@@ -73,6 +73,7 @@ export interface CreateGroupPayload {
   mapLocation: string;
 
   day: string;
-  time: string;
+  startTime: string;
+  endTime: string;
   maxMembers: number;
 }
