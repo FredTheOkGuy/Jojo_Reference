@@ -87,6 +87,16 @@ export default function MainScreen({
     setDisplayGroups(filtered);
   }, [searchCode, searchNum, openGroups]);
 
+  useEffect(() => {
+  const onFocus = () => {
+    if (user) reloadGroups(user.uid);
+  };
+
+  window.addEventListener("focus", onFocus);
+
+  return () => window.removeEventListener("focus", onFocus);
+}, [user]);
+
   async function reloadGroups(uid: string, cancelled = false) {
     const joinedGroups = await getMyGroups(uid);
     const groups = await getAllGroups();

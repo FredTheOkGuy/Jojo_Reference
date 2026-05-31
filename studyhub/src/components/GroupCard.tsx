@@ -32,7 +32,7 @@ export default function GroupCard({ group, joined, onDetail, onJoin }: GroupCard
   const colors = colorForId(group.id);
 
   const handleClick = () => {
-    if (joined && onDetail) onDetail(group.id);
+    if (onDetail) onDetail(group.id);
   };
 
   return (

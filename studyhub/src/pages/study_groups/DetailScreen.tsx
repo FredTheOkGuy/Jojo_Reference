@@ -4,7 +4,7 @@ import { DocumentsList, ListPanel, MembersList } from "@/components/ui/ContentLi
 import PageNavigator from "@/components/ui/PageNavigator";
 import TopBar, { BackButton } from "@/components/ui/TopBar";
 import { useAuth } from "@/hooks/useAuth";
-import { deleteStudyGroup, leaveStudyGroup } from "@/queries/study_group";
+import { deleteStudyGroup, leaveStudyGroup, joinStudyGroup } from "@/queries/study_group";
 import { db } from "@/services/firebase/firebase";
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -33,6 +33,8 @@ export default function DetailScreen() {
   const [members, setMembers] = useState<string[]>([]);
   const [docs, setDocs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const joined = members.includes(user?.displayName);
 
   useEffect(() => {
     if (!groupId) return;
@@ -70,6 +72,19 @@ export default function DetailScreen() {
       alert("Failed to leave group.");
     }
   };
+
+  const handleJoin = async () => {
+    if (!user || !groupId) return;
+    try {
+      const studentName = user.displayName ?? user.email ?? user.uid;
+      await joinStudyGroup(groupId, studentName);
+      setMembers(prev => [...prev, studentName]);
+      navigate("/app")
+    } catch (e) {
+      console.error(e);
+      alert("Failed to join group.");
+    }
+  }
 
   if (loading) {
     return (
@@ -134,7 +149,11 @@ export default function DetailScreen() {
 
           <div className="flex gap-2.5">
             <Button label="Open Chat" onClick={() => navigate(`/app/chat/${groupId}`)} variant="primary" fullWidth />
-            <Button label="Leave Group" onClick={handleLeave} variant="danger" fullWidth />
+            {joined ? (
+              <Button label="Leave Group" onClick={handleLeave} variant="danger" fullWidth />
+            ) : (
+              <Button label="Join Group" onClick={handleJoin} variant="primary" fullWidth />
+            )}
           </div>
         </Card>
 
