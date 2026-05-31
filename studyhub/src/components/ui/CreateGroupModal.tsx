@@ -251,7 +251,7 @@ export default function CreateGroupModal({
               >
                 <span
                   className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                    isPrivate ? "translate-x-6" : "translate-x-1"
+                    isPrivate ? "translate-x-8" : "translate-x-0.5"
                   }`}
                 />
                 <span className="sr-only">

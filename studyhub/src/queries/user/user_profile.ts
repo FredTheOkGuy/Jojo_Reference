@@ -1,5 +1,5 @@
 import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "@/services/firebase/firebase";
+import { db } from "../../services/firebase/firebase";
 
 type UserProfile = {
     uid: string,
