@@ -92,8 +92,9 @@ export async function generateStudyGuide(
   file: File,
   startTime: Date,
   endTime: Date,
-  chapters: string
-): Promise<string> {
+  chapters: string,
+  groupId: string
+) {
   const base64 = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
@@ -134,5 +135,10 @@ Keep it clear and concise so the student can follow it during the session.
     ],
   });
 
-  return response.text ?? "No study guide generated.";
+  const studyGuide = response.text ?? "No study guide generated.";
+
+  await addDoc(collection(db, "study_groups", groupId), {
+    studyGuide: studyGuide,
+    createdAt: serverTimestamp(),
+  });
 }
