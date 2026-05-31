@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 interface TopBarProps {
   title?: string;
@@ -48,13 +49,15 @@ export function BackButton({ onClick, label = "Back" }: { onClick?: () => void; 
 }
 
 export function AvatarButton({ initials = "AJ", onClick }: { initials?: string; onClick?: () => void }) {
+  const { user } = useAuth();
+  let displayInitials = user?.displayName.split(" ").map((n) => n[0]).join("").toUpperCase() || initials;
   return (
     <button
       type="button"
       onClick={onClick}
       className="w-9 h-9 rounded-full bg-[#c96332] text-white font-bold text-sm flex items-center justify-center transition-all hover:shadow-lg cursor-pointer border-2 border-[#f0b897]"
     >
-      {initials}
+      {displayInitials}
     </button>
   );
 }
