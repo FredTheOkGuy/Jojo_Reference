@@ -12,6 +12,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 7,
     max: 10,
     joined: true,
+    isPrivate: false,
+    joinRequested: false,
 
     // FYI/custom room field
     location: "H-521",
@@ -63,6 +65,8 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     cur: 5,
     max: 8,
     joined: false,
+    isPrivate: false,
+    joinRequested: false,
 
     // FYI/custom room field
     location: "LB-320",
@@ -82,26 +86,28 @@ export const INITIAL_GROUPS: StudyGroup[] = [
   },
   {
     id: 2,
-    name: "Digital Systems Study",
-    course: "COEN 244",
+    name: "Computer Architecture Circle",
+    course: "COEN 311",
     filterCode: "COEN",
-    filterNum: "244",
-    icon: "DS",
+    filterNum: "311",
+    icon: "CA",
     gi: "gi-purple",
-    cur: 6,
-    max: 10,
+    cur: 5,
+    max: 8,
     joined: false,
+    isPrivate: true,
+    joinRequested: false,
 
     // FYI/custom room field
-    location: "EV 1.210",
+    location: "EV 2.160",
 
     // Real map-searchable location
     mapLocation:
       "Concordia University EV Building, 1515 St Catherine St W, Montreal, QC",
 
-    days: "Friday",
-    time: "6:00 PM – 8:00 PM",
-    desc: "Digital circuits, logic gates, and Verilog simulations.",
+    days: "Thursday",
+    time: "7:00 PM – 8:30 PM",
+    desc: "Private review group for pipelines, memory hierarchy, and ISA basics.",
     badgeBg: "#ede0f7",
     badgeColor: "#7a4fa0",
     members: [],

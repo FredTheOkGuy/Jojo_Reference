@@ -16,6 +16,7 @@ interface DetailScreenProps {
   onBack: () => void;
   onChat: () => void;
   onLeave: () => void;
+  onAskToJoin: (id: number) => void;
 }
 
 export default function DetailScreen({
@@ -23,8 +24,10 @@ export default function DetailScreen({
   onBack,
   onChat,
   onLeave,
+  onAskToJoin,
 }: DetailScreenProps) {
   const colors = GI_COLORS_MAP[group.gi] || GI_COLORS_MAP["gi-orange"];
+  const showRequestAction = group.isPrivate && !group.joined;
 
   return (
     <div className="flex flex-col min-h-screen bg-[#f2ede3]">
@@ -50,6 +53,13 @@ export default function DetailScreen({
                 {group.course}
               </div>
 
+              {group.isPrivate ? (
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-[0.06em] mb-2 ml-2 bg-[#edeae2] text-[#4a4438]">
+                  <span aria-hidden="true">🔒</span>
+                  Private
+                </div>
+              ) : null}
+
               <h1 className="font-black text-3xl text-[#1a1610] font-['Syne'] leading-tight">
                 {group.name}
               </h1>
@@ -60,21 +70,38 @@ export default function DetailScreen({
             {group.desc}
           </p>
 
-          <div className="flex gap-2.5">
-            <Button
-              label="Open Chat"
-              onClick={onChat}
-              variant="primary"
-              fullWidth
-            />
+          {showRequestAction ? (
+            <>
+              <div className="mb-3 rounded-[12px] border border-[#ddd8cc] bg-[#edeae2] px-4 py-3 text-sm text-[#4a4438] font-medium">
+                This is a private group. Send a request to join first.
+              </div>
+              <div className="flex gap-2.5">
+                <Button
+                  label={group.joinRequested ? "Request Sent" : "Ask to Join"}
+                  onClick={() => onAskToJoin(group.id)}
+                  variant="primary"
+                  fullWidth
+                  disabled={group.joinRequested}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="flex gap-2.5">
+              <Button
+                label="Open Chat"
+                onClick={onChat}
+                variant="primary"
+                fullWidth
+              />
 
-            <Button
-              label="Leave Group"
-              onClick={onLeave}
-              variant="danger"
-              fullWidth
-            />
-          </div>
+              <Button
+                label="Leave Group"
+                onClick={onLeave}
+                variant="danger"
+                fullWidth
+              />
+            </div>
+          )}
         </Card>
 
         <div className="grid grid-cols-2 gap-3.5 mb-4">

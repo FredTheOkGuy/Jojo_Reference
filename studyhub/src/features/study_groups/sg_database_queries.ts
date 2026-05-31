@@ -14,6 +14,10 @@ export async function createStudyGroup(groupName: string,
                           studyDateAndTime: Date,
                           maxStudents: number
 ){
+    if (!db) {
+        throw new Error("Firestore is not configured.");
+    }
+
     const docRef = await addDoc(collection(db, "study_groups"), {
         groupName: groupName,
         courseCode: courseCode,
