@@ -197,29 +197,33 @@ export default function StudyHubApp() {
 
   if (screen === "main") {
     return (
-      <MainScreen
-        groups={groups}
-        filterSchool={filterSchool}
-        filterNum={filterNum}
-        filterCourseName={filterCourseName}
-        onFilterSchoolChange={setFilterSchool}
-        onFilterNumChange={setFilterNum}
-        onFilterCourseNameChange={setFilterCourseName}
-        onClearFilters={() => {
-          setFilterSchool("");
-          setFilterNum("");
-          setFilterCourseName("");
-        }}
-        onDetail={(id) => {
-          setActiveGroupId(id);
-          setDetailFrom("main");
-          setScreen("detail");
-        }}
-        onChats={() => setScreen("chats")}
-        onProfile={() => setScreen("profile")}
-        onJoin={handleJoin}
-        onCreate={handleCreateGroup}
-      />
+      <>
+        {requestModal}
+        <MainScreen
+          groups={groups}
+          filterSchool={filterSchool}
+          filterNum={filterNum}
+          filterCourseName={filterCourseName}
+          onFilterSchoolChange={setFilterSchool}
+          onFilterNumChange={setFilterNum}
+          onFilterCourseNameChange={setFilterCourseName}
+          onClearFilters={() => {
+            setFilterSchool("");
+            setFilterNum("");
+            setFilterCourseName("");
+          }}
+          onDetail={(id) => {
+            setActiveGroupId(id);
+            setDetailFrom("main");
+            setScreen("detail");
+          }}
+          onChats={() => setScreen("chats")}
+          onProfile={() => setScreen("profile")}
+          onJoin={handleJoin}
+          onAskToJoin={(id) => setRequestGroupId(id)}
+          onCreate={handleCreateGroup}
+        />
+      </>
     );
   }
 

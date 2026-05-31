@@ -24,9 +24,27 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#faeade",
     badgeColor: "#c96332",
     members: [
-      { i: "AJ", n: "Alice Johnson", r: "Concordia University", owner: true, c: "#c96332" },
-      { i: "MB", n: "Marcus Brown", r: "Concordia University", owner: false, c: "#5a6e3a" },
-      { i: "SP", n: "Sai Pagadala", r: "Concordia University", owner: false, c: "#3d5fa0" },
+      {
+        i: "AJ",
+        n: "Alice Johnson",
+        r: "Concordia University",
+        owner: true,
+        c: "#c96332",
+      },
+      {
+        i: "MB",
+        n: "Marcus Brown",
+        r: "Concordia University",
+        owner: false,
+        c: "#5a6e3a",
+      },
+      {
+        i: "SP",
+        n: "Sai Pagadala",
+        r: "Concordia University",
+        owner: false,
+        c: "#3d5fa0",
+      },
     ],
     docs: [
       { n: "Algo_Notes.pdf", t: "pdf", s: "2.4 MB" },
@@ -74,16 +92,28 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#e8edda",
     badgeColor: "#5a6e3a",
     members: [
-      { i: "RL", n: "Rocco Galette", r: "Concordia University", owner: true, c: "#5a6e3a" },
-      { i: "MH", n: "Michelle Hart", r: "Concordia University", owner: false, c: "#7a4fa0" },
+      {
+        i: "RL",
+        n: "Rocco Galette",
+        r: "Concordia University",
+        owner: true,
+        c: "#5a6e3a",
+      },
+      {
+        i: "MH",
+        n: "Michelle Hart",
+        r: "Concordia University",
+        owner: false,
+        c: "#7a4fa0",
+      },
     ],
     docs: [{ n: "Integral_Rules.pdf", t: "pdf", s: "980 KB" }],
     messages: [],
   },
   {
     id: 2,
-    name: "Digital Systems Study",
-    course: "COEN 244",
+    name: "Computer Architecture Circle",
+    course: "COEN 311",
     schoolName: "Concordia University",
     filterCode: "COEN",
     filterNum: "244",
@@ -94,17 +124,30 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "EV 1.210",
     mapLocation:
       "Concordia University EV Building, 1515 St Catherine St W, Montreal, QC",
     days: "Friday",
     time: "6:00 PM – 8:00 PM",
-    desc: "Digital circuits, logic gates, Boolean algebra, and Verilog simulations.",
+    desc: "Private review group for pipelines, memory hierarchy, and ISA basics.",
     badgeBg: "#ede0f7",
     badgeColor: "#7a4fa0",
     members: [
-      { i: "HX", n: "Henson Xie", r: "Concordia University", owner: true, c: "#7a4fa0" },
-      { i: "JP", n: "Joseph Palattao", r: "Concordia University", owner: false, c: "#c96332" },
+      {
+        i: "HX",
+        n: "Henson Xie",
+        r: "Concordia University",
+        owner: true,
+        c: "#7a4fa0",
+      },
+      {
+        i: "JP",
+        n: "Joseph Palattao",
+        r: "Concordia University",
+        owner: false,
+        c: "#c96332",
+      },
     ],
     docs: [{ n: "Logic_Gates_Review.pdf", t: "pdf", s: "1.7 MB" }],
     messages: [],
@@ -123,6 +166,7 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "SP-S110",
     mapLocation:
       "Concordia University Science Pavilion, 7141 Sherbrooke St W, Montreal, QC",
@@ -132,8 +176,20 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#dde6f5",
     badgeColor: "#3d5fa0",
     members: [
-      { i: "CN", n: "Carl Nasr", r: "Concordia University", owner: true, c: "#3d5fa0" },
-      { i: "AM", n: "Amina Malik", r: "Concordia University", owner: false, c: "#5a6e3a" },
+      {
+        i: "CN",
+        n: "Carl Nasr",
+        r: "Concordia University",
+        owner: true,
+        c: "#3d5fa0",
+      },
+      {
+        i: "AM",
+        n: "Amina Malik",
+        r: "Concordia University",
+        owner: false,
+        c: "#5a6e3a",
+      },
     ],
     docs: [{ n: "Forces_Practice.pdf", t: "pdf", s: "1.1 MB" }],
     messages: [],
@@ -152,6 +208,7 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "MB 3.255",
     mapLocation:
       "Concordia University John Molson Building, 1450 Guy St, Montreal, QC",
@@ -161,8 +218,20 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#f7edcc",
     badgeColor: "#8a6a1e",
     members: [
-      { i: "LK", n: "Liam Kim", r: "Concordia University", owner: true, c: "#8a6a1e" },
-      { i: "NS", n: "Nora Singh", r: "Concordia University", owner: false, c: "#c96332" },
+      {
+        i: "LK",
+        n: "Liam Kim",
+        r: "Concordia University",
+        owner: true,
+        c: "#8a6a1e",
+      },
+      {
+        i: "NS",
+        n: "Nora Singh",
+        r: "Concordia University",
+        owner: false,
+        c: "#c96332",
+      },
     ],
     docs: [{ n: "Sprint_Checklist.docx", t: "docx", s: "650 KB" }],
     messages: [],
@@ -181,6 +250,7 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "H-837",
     mapLocation:
       "Concordia University Hall Building, 1455 De Maisonneuve Blvd W, Montreal, QC",
@@ -190,8 +260,20 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#faeade",
     badgeColor: "#c96332",
     members: [
-      { i: "YA", n: "Yusuf Ali", r: "Concordia University", owner: true, c: "#c96332" },
-      { i: "EW", n: "Emma Wilson", r: "Concordia University", owner: false, c: "#3d5fa0" },
+      {
+        i: "YA",
+        n: "Yusuf Ali",
+        r: "Concordia University",
+        owner: true,
+        c: "#c96332",
+      },
+      {
+        i: "EW",
+        n: "Emma Wilson",
+        r: "Concordia University",
+        owner: false,
+        c: "#3d5fa0",
+      },
     ],
     docs: [{ n: "Graph_Algorithms.pdf", t: "pdf", s: "2.2 MB" }],
     messages: [],
@@ -210,6 +292,7 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "EV 5.615",
     mapLocation:
       "Concordia University EV Building, 1515 St Catherine St W, Montreal, QC",
@@ -219,8 +302,20 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#e8edda",
     badgeColor: "#5a6e3a",
     members: [
-      { i: "AR", n: "Ali Rizvi", r: "Concordia University", owner: true, c: "#5a6e3a" },
-      { i: "KM", n: "Kareem Mansour", r: "Concordia University", owner: false, c: "#7a4fa0" },
+      {
+        i: "AR",
+        n: "Ali Rizvi",
+        r: "Concordia University",
+        owner: true,
+        c: "#5a6e3a",
+      },
+      {
+        i: "KM",
+        n: "Kareem Mansour",
+        r: "Concordia University",
+        owner: false,
+        c: "#7a4fa0",
+      },
     ],
     docs: [{ n: "UART_Timer_Notes.pdf", t: "pdf", s: "1.5 MB" }],
     messages: [],
@@ -239,6 +334,7 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "LB-205",
     mapLocation:
       "Concordia University Webster Library, 1400 De Maisonneuve Blvd W, Montreal, QC",
@@ -248,8 +344,20 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#dde6f5",
     badgeColor: "#3d5fa0",
     members: [
-      { i: "SR", n: "Sara Rahman", r: "Concordia University", owner: true, c: "#3d5fa0" },
-      { i: "TN", n: "Theo Nguyen", r: "Concordia University", owner: false, c: "#c96332" },
+      {
+        i: "SR",
+        n: "Sara Rahman",
+        r: "Concordia University",
+        owner: true,
+        c: "#3d5fa0",
+      },
+      {
+        i: "TN",
+        n: "Theo Nguyen",
+        r: "Concordia University",
+        owner: false,
+        c: "#c96332",
+      },
     ],
     docs: [{ n: "ML_Intro_Slides.pptx", t: "pptx", s: "3.8 MB" }],
     messages: [],
@@ -268,6 +376,7 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "Burnside 1B24",
     mapLocation: "Burnside Hall, 805 Sherbrooke St W, Montreal, QC",
     days: "Sunday",
@@ -276,8 +385,20 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#ede0f7",
     badgeColor: "#7a4fa0",
     members: [
-      { i: "OD", n: "Olivia Davis", r: "McGill University", owner: true, c: "#7a4fa0" },
-      { i: "JM", n: "Jacob Miller", r: "McGill University", owner: false, c: "#5a6e3a" },
+      {
+        i: "OD",
+        n: "Olivia Davis",
+        r: "McGill University",
+        owner: true,
+        c: "#7a4fa0",
+      },
+      {
+        i: "JM",
+        n: "Jacob Miller",
+        r: "McGill University",
+        owner: false,
+        c: "#5a6e3a",
+      },
     ],
     docs: [{ n: "Matrix_Practice.pdf", t: "pdf", s: "1.4 MB" }],
     messages: [],
@@ -296,6 +417,7 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     joined: false,
     isPrivate: false,
     joinRequested: false,
+
     location: "B-2245",
     mapLocation:
       "Université de Montréal, 2900 Edouard Montpetit Blvd, Montreal, QC",
@@ -305,8 +427,20 @@ export const INITIAL_GROUPS: StudyGroup[] = [
     badgeBg: "#f7edcc",
     badgeColor: "#8a6a1e",
     members: [
-      { i: "CL", n: "Camille Laurent", r: "Université de Montréal", owner: true, c: "#8a6a1e" },
-      { i: "RM", n: "Ryan Moore", r: "Université de Montréal", owner: false, c: "#3d5fa0" },
+      {
+        i: "CL",
+        n: "Camille Laurent",
+        r: "Université de Montréal",
+        owner: true,
+        c: "#8a6a1e",
+      },
+      {
+        i: "RM",
+        n: "Ryan Moore",
+        r: "Université de Montréal",
+        owner: false,
+        c: "#3d5fa0",
+      },
     ],
     docs: [{ n: "French_Basics.docx", t: "docx", s: "720 KB" }],
     messages: [],
