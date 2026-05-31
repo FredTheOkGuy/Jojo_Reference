@@ -1,6 +1,6 @@
-import type { StudyGroup } from "../app/types";
-import { CapacityMeter } from "./ui/Card";
-import { GI_COLORS_MAP } from "../data/mockData";
+import type { StudyGroup } from "../../app/types";
+import { CapacityMeter } from "./Card";
+import { GI_COLORS_MAP } from "../../data/mockData";
 
 interface GroupCardProps {
   group: StudyGroup;

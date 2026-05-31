@@ -7,9 +7,10 @@ import PageNavigator from "../../components/ui/PageNavigator";
 interface ProfileScreenProps {
   groups: StudyGroup[];
   onBack: () => void;
+  onSignOut: () => void | Promise<void>;
 }
 
-export default function ProfileScreen({ groups, onBack }: ProfileScreenProps) {
+export default function ProfileScreen({ groups, onBack, onSignOut }: ProfileScreenProps) {
   const joinedCount = groups.filter((g) => g.joined).length;
 
   return (
@@ -42,10 +43,10 @@ export default function ProfileScreen({ groups, onBack }: ProfileScreenProps) {
         <ProfileItem icon="🎓" label="Academic Info" tint="#ede0f7" />
         <button
           type="button"
-          onClick={onBack}
+          onClick={onSignOut}
           className="w-full mt-6 py-3 bg-transparent border-2 border-[#f0cece] rounded-[9px] text-[#a33030] text-sm font-bold cursor-pointer transition-all hover:bg-[#fdf0f0]"
         >
-          Sign out
+          Sign Out
         </button>
       </main>
     </div>

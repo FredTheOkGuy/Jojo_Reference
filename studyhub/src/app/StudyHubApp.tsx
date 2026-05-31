@@ -6,6 +6,7 @@ import ChatsScreen from "../features/chat/ChatsScreen";
 import DetailScreen from "../pages/study_groups/DetailScreen";
 import ChatScreen from "../features/chat/ChatScreen";
 import ProfileScreen from "../features/profile/ProfileScreen";
+import { logout } from "../services/firebase/auth";
 
 import type { CreateGroupPayload, StudyGroup } from "./types";
 export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup } from "./types";
@@ -98,6 +99,15 @@ export default function StudyHubApp() {
       filterNum: data.number || "000",
     };
     setGroups([...groups, newGroup]);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await logout();
+    } finally {
+      setActiveGroupId(null);
+      setScreen("login");
+    }
   };
 
   const handleSendMessage = (text: string) => {
@@ -203,7 +213,7 @@ export default function StudyHubApp() {
   }
 
   if (screen === "profile") {
-    return <ProfileScreen groups={groups} onBack={() => setScreen("main")} />;
+    return <ProfileScreen groups={groups} onBack={() => setScreen("main")} onSignOut={handleSignOut} />;
   }
 
   return <div>Unknown screen</div>;

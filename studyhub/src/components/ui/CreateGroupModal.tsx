@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
-import type { CreateGroupPayload } from '../app/types';
+import type { CreateGroupPayload } from '../../app/types';
 
 interface CreateGroupModalProps {
   open: boolean;
