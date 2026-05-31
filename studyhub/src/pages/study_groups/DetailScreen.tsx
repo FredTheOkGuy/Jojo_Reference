@@ -1,4 +1,4 @@
-import type { StudyGroup } from "../../app/types";
+import type { StudyGroup_old } from "../../app/types";
 import Button from "../../components/ui/Button";
 import TopBar, { BackButton } from "../../components/ui/TopBar";
 import { CapacityMeter, Card, InfoBox } from "../../components/ui/Card";
@@ -11,7 +11,7 @@ import { GI_COLORS_MAP } from "../../data/mockData";
 import PageNavigator from "../../components/ui/PageNavigator";
 
 interface DetailScreenProps {
-  group: StudyGroup;
+  group: StudyGroup_old;
   onBack: () => void;
   onChat: () => void;
   onLeave: () => void;

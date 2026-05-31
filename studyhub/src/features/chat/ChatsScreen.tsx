@@ -1,11 +1,11 @@
-import type { StudyGroup } from "../../app/types";
+import type { StudyGroup_old } from "../../app/types";
 import ChatListItem from "../../components/ui/ChatListItem";
 import TopBar, { AvatarButton, BackButton } from "../../components/ui/TopBar";
 import { EmptyState } from "../../components/ui/Card";
 import PageNavigator from "../../components/ui/PageNavigator";
 
 interface ChatsScreenProps {
-  groups: StudyGroup[];
+  groups: StudyGroup_old[];
   onDetail: (id: number) => void;
   onChat: (id: number) => void;
   onBack: () => void;

@@ -21,7 +21,7 @@ export interface Message {
   time: string;
 }
 
-export interface StudyGroup {
+export interface StudyGroup_old {
   id: number;
   name: string;
   course: string;
@@ -51,4 +51,17 @@ export interface CreateGroupPayload {
   day: string;
   time: string;
   maxMembers: number;
+}
+
+export type StudyGroup  = {
+  id: string;
+  name: string;
+  courseCode: string;
+  courseNum: string;
+  day: string;
+  startTime: string;
+  endTime: string;
+  memberCount: number;
+  maxStudents: number;
+  isPrivate: boolean;
 }

@@ -1,9 +1,9 @@
-import type { StudyGroup } from "../../app/types";
+import type { StudyGroup_old } from "../../app/types";
 import { CapacityMeter } from "./Card";
 import { GI_COLORS_MAP } from "../../data/mockData";
 
 interface GroupCardProps {
-  group: StudyGroup;
+  group: StudyGroup_old;
   joined: boolean;
   onDetail?: (id: number) => void;
   onJoin?: () => void;

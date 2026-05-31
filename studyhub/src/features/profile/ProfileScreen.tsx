@@ -1,11 +1,11 @@
-import type { StudyGroup } from "../../app/types";
+import type { StudyGroup_old } from "../../app/types";
 import TopBar, { BackButton } from "../../components/ui/TopBar";
 import ProfileItem from "../../components/ui/ProfileItem";
 import { CURRENT_USER } from "../../data/mockData";
 import PageNavigator from "../../components/ui/PageNavigator";
 
 interface ProfileScreenProps {
-  groups: StudyGroup[];
+  groups: StudyGroup_old[];
   onBack: () => void;
   onSignOut: () => void | Promise<void>;
 }

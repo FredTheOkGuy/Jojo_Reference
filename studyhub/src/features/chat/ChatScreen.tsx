@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import type { StudyGroup } from "../../app/types";
+import type { StudyGroup_old } from "../../app/types";
 import { MessageList } from "../../components/ui/MessageList";
 import TopBar, { BackButton } from "../../components/ui/TopBar";
 import PageNavigator from "../../components/ui/PageNavigator";
 
 interface ChatScreenProps {
-  group: StudyGroup;
+  group: StudyGroup_old;
   onBack: () => void;
   onSendMessage: (text: string) => void;
 }
