@@ -1,6 +1,7 @@
 import { Suspense, lazy, Component, useState } from "react";
 import type { ReactNode } from "react";
 import './App.css'
+import AppRoutes from "./routes/AppRoutes";
 
 
 const StudyHubApp = lazy(() => import("./app/StudyHubApp"));
@@ -45,7 +46,7 @@ export default function App() {
           </div>
         }
       >
-        <StudyHubApp />
+        <AppRoutes/>
       </Suspense>
     </ErrorBoundary>
   );

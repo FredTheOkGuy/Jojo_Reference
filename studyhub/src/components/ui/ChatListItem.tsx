@@ -1,8 +1,8 @@
-import type { StudyGroup } from "../../app/types";
+import type { StudyGroup_old } from "../../app/types";
 import { GI_COLORS_MAP } from "../../data/mockData";
 
 interface ChatListItemProps {
-  group: StudyGroup;
+  group: StudyGroup_old;
   onOpen: (id: number) => void;
 }
 

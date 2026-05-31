@@ -1,4 +1,4 @@
-import type { StudyGroup } from "../app/StudyHubApp";
+import type { StudyGroup } from "@/app/types";
 
 const GI_COLORS_MAP: Record<string, { bg: string; text: string }> = {
   "gi-orange": { bg: "#faeade", text: "#c96332" },
@@ -21,16 +21,16 @@ export default function GroupCard({
   onDetail,
   onJoin,
 }: GroupCardProps) {
-  const pct = Math.round((group.cur / group.max) * 100);
+  const pct = Math.round((group.memberCount / group.maxStudents) * 100);
   const capacityClass =
     pct >= 100 ? "bg-[#c96332]" : pct >= 75 ? "bg-[#8a6a1e]" : "bg-[#5a6e3a]";
 
-  const isFull = group.cur >= group.max;
-  const colors = GI_COLORS_MAP[group.gi] || GI_COLORS_MAP["gi-orange"];
+  const isFull = group.memberCount >= group.maxStudents;
+  const colors = GI_COLORS_MAP["gi-green"] || GI_COLORS_MAP["gi-orange"];
 
   const handleClick = () => {
     if (joined && onDetail) {
-      onDetail(group.id);
+      onDetail(1);
     }
   };
 
@@ -47,7 +47,7 @@ export default function GroupCard({
         className="w-14 h-14 rounded-[13px] flex items-center justify-center font-black text-lg font-['Syne'] flex-shrink-0 -tracking-0.5px"
         style={{ background: colors.bg, color: colors.text }}
       >
-        {group.icon}
+        {group.name.slice(0, 2).toUpperCase()}
       </div>
 
       {/* Info */}
@@ -56,15 +56,15 @@ export default function GroupCard({
           {group.name}
         </div>
         <div className="text-xs text-[#9a9282] flex gap-2 items-center font-medium mb-2.5">
-          <span>{group.course}</span>
+          <span>{group.courseCode} {group.courseNum}</span>
           <span className="w-1 h-1 rounded-full bg-[#9a9282]"></span>
           <span>
-            {group.days} · {group.time.split(" – ")[0]}
+            {group.day} · {group.startTime}
           </span>
         </div>
         <div className="flex items-center gap-2.5">
           <span className="text-xs font-bold text-[#4a4438] whitespace-nowrap">
-            {group.cur} / {group.max}
+            {group.memberCount} / {group.maxStudents}
           </span>
           <div className="flex-1 h-1 bg-[#e4e0d6] rounded-full overflow-hidden max-w-[90px]">
             <div

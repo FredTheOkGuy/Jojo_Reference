@@ -1,9 +1,9 @@
 // This file contains all hardcoded data
 // Replace this with API/database calls later
 
-import type { StudyGroup } from "../app/types";
+import type { StudyGroup_old } from "../app/types";
 
-export const INITIAL_GROUPS: StudyGroup[] = [
+export const INITIAL_GROUPS: StudyGroup_old[] = [
   {
     id: 0,
     name: "Algorithm Masters",

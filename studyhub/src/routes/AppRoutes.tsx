@@ -1,28 +1,31 @@
-import { useState } from "react";
-import { CURRENT_USER, INITIAL_GROUPS } from "../data/mockData";
-import SignUpScreen from "../pages/auth/SignUpScreen";
-import MainScreen from "../pages/study_groups/MainScreen";
-import ChatsScreen from "../features/chat/ChatsScreen";
-import DetailScreen from "../pages/study_groups/DetailScreen";
-import ChatScreen from "../features/chat/ChatScreen";
-import ProfileScreen from "../features/profile/ProfileScreen";
-import { logout } from "../services/firebase/auth";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom"
 
-import type { CreateGroupPayload, StudyGroup_old } from "./types";
-import App from "@/App";
-import AppRoutes from "@/routes/AppRoutes";
-export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup_old as StudyGroup } from "./types";
+import { useAuth } from "@/hooks/useAuth"
+import SignUpScreen from "@/pages/auth/SignUpScreen"
+import MainScreen from "@/pages/study_groups/MainScreen"
+import { useState } from "react"
+import { CURRENT_USER, INITIAL_GROUPS } from "@/data/mockData";
+import { logout } from "@/services/firebase/auth"
+
+import type { CreateGroupPayload, StudyGroup_old } from "@/app/types";
+import ProfileScreen from "@/features/profile/ProfileScreen"
+import ChatsScreen from "@/features/chat/ChatsScreen"
+import DetailScreen from "@/pages/study_groups/DetailScreen"
+export type { CreateGroupPayload, DocumentType, Member, Message, StudyGroup_old as StudyGroup } from "@/app/types";
 
 type Screen = "login" | "main" | "chats" | "detail" | "chat" | "profile";
 
-export default function StudyHubApp() {
-  const [screen, setScreen] = useState<Screen>("login");
+export default function AppRoutes() {
+  const { user, loading } = useAuth()
   const [groups, setGroups] = useState<StudyGroup_old[]>(INITIAL_GROUPS);
   const [filterCode, setFilterCode] = useState("");
   const [filterNum, setFilterNum] = useState("");
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [detailFrom, setDetailFrom] = useState<"main" | "chats">("main");
   const [chatFrom, setChatFrom] = useState<"detail" | "chats">("detail");
+  const [screen, setScreen] = useState<Screen>("login");
+
+  const navigate = useNavigate();
 
   const handleJoin = (id: number) => {
     setGroups((currentGroups) =>
@@ -108,7 +111,7 @@ export default function StudyHubApp() {
       await logout();
     } finally {
       setActiveGroupId(null);
-      setScreen("login");
+      navigate("/signup");
     }
   };
 
@@ -140,83 +143,65 @@ export default function StudyHubApp() {
     }
   };
 
-  if (screen === "login") {
-    return <SignUpScreen/>;
-  }
-
-  if (screen === "main") {
-    return (
-      <MainScreen
-        groups={groups}
-        filterCode={filterCode}
-        filterNum={filterNum}
-        onFilterCodeChange={setFilterCode}
-        onFilterNumChange={setFilterNum}
-        onDetail={(id) => {
-          setActiveGroupId(id);
-          setDetailFrom("main");
-          setScreen("detail");
-        }}
-        onChats={() => setScreen("chats")}
-        onProfile={() => setScreen("profile")}
-        onJoin={handleJoin}
-        onCreate={handleCreateGroup}
-      />
-    );
-  }
-
-  if (screen === "chats") {
-    return (
-      <ChatsScreen
-        groups={groups}
-        onDetail={(id) => {
-          setActiveGroupId(id);
-          setDetailFrom("chats");
-          setScreen("detail");
-        }}
-        onChat={(id) => {
-          setActiveGroupId(id);
-          setChatFrom("chats");
-          setScreen("chat");
-        }}
-        onBack={() => setScreen("main")}
-        onProfile={() => setScreen("profile")}
-      />
-    );
-  }
-
   const activeGroup = activeGroupId === null ? undefined : groups.find((g) => g.id === activeGroupId);
 
-  if (screen === "detail" && activeGroup) {
-    return (
-      <DetailScreen
-        group={activeGroup}
-        onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
-        onChat={() => {
-          setChatFrom("detail");
-          setScreen("chat");
-        }}
-        onLeave={() => {
-          handleLeave(activeGroup.id);
-          setScreen(detailFrom === "chats" ? "chats" : "main");
-        }}
-      />
-    );
-  }
+  return (
+    <Routes>
+      <Route path="/signup" element={<SignUpScreen />} />
 
-  if (screen === "chat" && activeGroup) {
-    return (
-      <ChatScreen
-        group={activeGroup}
-        onBack={() => setScreen(chatFrom === "chats" ? "chats" : "detail")}
-        onSendMessage={handleSendMessage}
-      />
-    );
-  }
+      <Route path="/app" element={<MainScreen 
+        filterCode={filterCode}
+        filterNum={filterNum}
+        onJoin={handleJoin}
+        onCreate={handleCreateGroup}
+      />} />
 
-  if (screen === "profile") {
-    return <ProfileScreen groups={groups} onBack={() => setScreen("main")} onSignOut={handleSignOut} />;
-  }
+      <Route path="/app/profile" element={
+        <ProfileScreen 
+          groups={groups} 
+          onBack={() => navigate("/app")} 
+          onSignOut={handleSignOut} 
+        />
+      }/>
 
-  return <div>Unknown screen</div>;
+      <Route path="/app/chats" element={
+        <ChatsScreen
+          groups={groups}
+          onDetail={(id) => {
+            setActiveGroupId(id);
+            setDetailFrom("chats");
+            setScreen("detail");
+          }}
+          onChat={(id) => {
+            setActiveGroupId(id);
+            setChatFrom("chats");
+            setScreen("chat");
+          }}
+          onBack={() => setScreen("main")}
+          onProfile={() => setScreen("profile")}
+        />
+      }/>
+
+      <Route path="/app/detail" element={
+        <DetailScreen
+          group={activeGroup}
+          onBack={() => setScreen(detailFrom === "chats" ? "chats" : "main")}
+          onChat={() => {
+            setChatFrom("detail");
+            setScreen("chat");
+          }}
+          onLeave={() => {
+            handleLeave(activeGroup.id);
+            setScreen(detailFrom === "chats" ? "chats" : "main");
+          }}
+        />
+      }/>
+
+      {user ? (
+        <Route path="/*" element={<Navigate to="/app" />} />
+      ) : (
+        <Route path="/*" element={<Navigate to="/signup" />} />
+      )}
+    </Routes>
+  )
 }
