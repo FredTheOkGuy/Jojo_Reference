@@ -23,8 +23,9 @@ type Screen = "login" | "main" | "chats" | "detail" | "chat" | "profile";
 export default function StudyHubApp() {
   const [screen, setScreen] = useState<Screen>("login");
   const [groups, setGroups] = useState<StudyGroup[]>(INITIAL_GROUPS);
-  const [filterCode, setFilterCode] = useState("");
+  const [filterSchool, setFilterSchool] = useState("");
   const [filterNum, setFilterNum] = useState("");
+  const [filterCourseName, setFilterCourseName] = useState("");
   const [activeGroupId, setActiveGroupId] = useState<number | null>(null);
   const [detailFrom, setDetailFrom] = useState<"main" | "chats">("main");
   const [chatFrom, setChatFrom] = useState<"detail" | "chats">("detail");
@@ -100,10 +101,8 @@ export default function StudyHubApp() {
       max: data.maxMembers || 8,
       joined: true,
 
-      // FYI/custom room field
       location: data.location || "TBD",
 
-      // Real physical map location field
       mapLocation:
         data.mapLocation ||
         data.location ||
@@ -144,6 +143,7 @@ export default function StudyHubApp() {
       ],
       filterCode: data.code || "MISC",
       filterNum: data.number || "000",
+      schoolName: CURRENT_USER.school,
     };
 
     setGroups([...groups, newGroup]);
@@ -194,10 +194,17 @@ export default function StudyHubApp() {
     return (
       <MainScreen
         groups={groups}
-        filterCode={filterCode}
+        filterSchool={filterSchool}
         filterNum={filterNum}
-        onFilterCodeChange={setFilterCode}
+        filterCourseName={filterCourseName}
+        onFilterSchoolChange={setFilterSchool}
         onFilterNumChange={setFilterNum}
+        onFilterCourseNameChange={setFilterCourseName}
+        onClearFilters={() => {
+          setFilterSchool("");
+          setFilterNum("");
+          setFilterCourseName("");
+        }}
         onDetail={(id) => {
           setActiveGroupId(id);
           setDetailFrom("main");

@@ -25,6 +25,13 @@ export interface StudyGroup {
   id: number;
   name: string;
   course: string;
+
+  /*
+    Frontend-only school text used by the main-page search.
+    This does not require a backend/database change.
+  */
+  schoolName?: string;
+
   icon: string;
   gi: string;
   cur: number;
