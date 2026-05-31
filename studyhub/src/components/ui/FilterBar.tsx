@@ -19,7 +19,7 @@ export default function FilterBar({
   courseNumbers,
   onFilterCodeChange,
   onFilterNumChange,
-  onCreate,
+  onCreate,S
 }: FilterBarProps) {
   return (
     <div className="flex gap-2.5 mb-4 flex-wrap items-center">

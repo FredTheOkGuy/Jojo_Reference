@@ -6,7 +6,7 @@ import TopBar, { BackButton } from "@/components/ui/TopBar";
 import { useAuth } from "@/hooks/useAuth";
 import { deleteStudyGroup, leaveStudyGroup, joinStudyGroup } from "@/queries/study_group";
 import { db } from "@/services/firebase/firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, updateDoc, arrayUnion } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -140,6 +140,9 @@ export default function DetailScreen() {
       const studentName = user.displayName ?? user.email ?? user.uid;
       await joinStudyGroup(groupId, studentName);
       setMembers(prev => [...prev, studentName]);
+      await updateDoc(doc(db, "users", user.uid), {
+             groupIds: arrayUnion(groupId),
+           });
       navigate("/app")
     } catch (e) {
       console.error(e);
