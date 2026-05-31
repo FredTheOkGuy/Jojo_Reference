@@ -1,4 +1,4 @@
-import { createUserProfile } from "@/queries/user/user_profile";
+import { createUserProfile } from "../../queries/user/user_profile";
 import { auth } from "./firebase";
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
 

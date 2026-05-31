@@ -3,15 +3,16 @@
     for the study groups.
 */
 
-import { app, db } from "@/services/firebase/firebase";
-import { GoogleGenAI } from "@google/genai";
-import { addDoc, arrayRemove, arrayUnion, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+// import { app, db } from "../../services/firebase/firebase";
+// import { GoogleGenAI } from "@google/genai";
+// import { addDoc, arrayRemove, arrayUnion, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+// import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
-const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
+// const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
-const storage = getStorage(app);
+// const storage = getStorage(app);
 
+/*
 export async function createStudyGroup(groupName: string,
                           courseCode: string,
                           courseNumber: string,
@@ -136,3 +137,4 @@ Keep it clear and concise so the student can follow it during the session.
 
   return response.text ?? "No study guide generated.";
 }
+*/
